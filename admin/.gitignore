@@ -20,6 +20,3 @@ firebase-debug.log
 *.njsproj
 *.sln
 *.sw?
-
-/.firebase
-.browserslistrc
