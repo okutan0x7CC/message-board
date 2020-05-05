@@ -29,10 +29,11 @@ message-board
 |Realtime Database セキュリティルール|client に依存|database.rules.json で管理|client に依存|
 |サイトURL|https://admin-message-board-d24c1.web.app|https://message-board-d24c1.web.app|https://projection-message-board-d24c1.web.app|
 |Cloud Function|`./admin/functions` で管理|admin に依存|admin に依存|
+|デプロイ|`./admin/deploy.sh` <br> または <br> `cd ./admin && npm run deploy` <br>を実行|`./client/deploy.sh` <br> または <br> `cd ./client && npm run deploy` <br>を実行|`./projection/deploy.sh` <br> または <br> `cd ./projection && npm run deploy` <br>を実行|
 
 
 ## admin の IP アドレス制限
-アクセス許可する IP アドレスは Firebase CLI で設定する[^1]。
+アクセス許可する IP アドレスは Firebase CLI で設定する [^1]。
 
 [^1]: Firebase 環境の構成  
     https://firebase.google.com/docs/functions/config-env
