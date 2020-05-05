@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "message-board-d24c1"
+    "production": "message-board-d24c1"
+    "staging": "stg-message-board"
   }
 }
