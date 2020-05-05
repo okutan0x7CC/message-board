@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "projection-message-board",
+    "site": "projection-message-board-d24c1",
     "public": "dist",
     "ignore": [
       "firebase.json",

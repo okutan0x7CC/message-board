@@ -5,7 +5,7 @@
     ]
   },
   "hosting": {
-    "site": "admin-message-board",
+    "site": "admin-message-board-d24c1",
     "public": "dist",
     "ignore": [
       "firebase.json",
