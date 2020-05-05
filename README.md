@@ -28,5 +28,5 @@ message-board
 |-|:-:|:-:|:-:|
 |Realtime Database セキュリティルール|client に依存|database.rules.json で管理|client に依存|
 |サイトURL|https://admin-message-board-d24c1.web.app|https://message-board-d24c1.web.app|https://projection-message-board-d24c1.web.app|
-|
+
 
