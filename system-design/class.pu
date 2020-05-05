@@ -1,0 +1,42 @@
+@startuml class
+
+class MessageBoard {
+    + fetchRooms() : Room[*]
+    + createRoom() : void
+    + deleteRoom() : void
+    + archiveRoom() : void
+    + importRoom() : Room
+}
+
+class Room {
+    + title : string
+    + public_start_datetime : datetime
+    + public_end_datetime : datetime
+    + post_start_datetime : datetime
+    + post_end_datetime : datetime
+    + isPublicNow() : bool
+    + canPostNow() : bool
+    + fetchMessages() : Message[*]
+    + postMessage() : void
+    + deleteMessage() : void
+    + hideMessage() : void
+}
+MessageBoard "1" o-- "*" Room : created <
+
+class Message {
+    + user_id : string
+    + nickname : string
+    + text : string
+    + timestamp : string
+    + reactGood() : void
+    + isReactedBy(user_id : string) : bool
+    + isPostedBy(user_id : string) : bool
+}
+Room "1" o-- "*" Message : posted <
+
+class ReactionGood {
+    + user_id : string
+}
+Message "1" o-- "*" ReactionGood : reacted <
+
+@enduml
