@@ -1,6 +1,34 @@
 {
-  "projects": {
-    "production": "message-board-d24c1"
-    "staging": "stg-message-board"
+  "projects": {  
+    "staging": "stg-message-board",  
+    "production": "message-board-d24c1"  
+  },
+  "targets": {
+    "stg-message-board": {
+      "hosting": {
+        "admin": [
+          "stg-admin-message-board"
+        ],
+        "client": [
+          "stg-message-board"
+        ],
+        "projection": [
+          "stg-projection-message-board"
+        ]
+      }
+    },
+    "message-board-d24c1": {
+      "hosting": {
+        "admin": [
+          "admin-message-board-d24c1"
+        ],
+        "client": [
+          "message-board-d24c1"
+        ],
+        "projection": [
+          "projection-message-board-d24c1"
+        ]
+      }
+    }
   }
 }
