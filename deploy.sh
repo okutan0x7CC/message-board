@@ -23,12 +23,12 @@ select env in staging production quit; do
     PS3="Enter a number: "
     select target in admin_and_functions client projection database; do
         case $target in
-            admin_and_functions)
+            admin_and_function)
                 printf "Target: $target"
                 rm -rf ./admin/dist && rm -rf ./functions/admin/*
                 cd admin && npm run build && cd ..
                 mv ./admin/dist/index.html ./functions/admin/index.html
-                firebase deploy --project=$env --only hosting:admin,functions
+                firebase deploy --project=$env --only hosting:admin,functions:adminIndexHtml
                 ;;
             client)
                 printf "Target: $target"
