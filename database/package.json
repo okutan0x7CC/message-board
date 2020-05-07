@@ -1,0 +1,12 @@
+{
+  "name": "database",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "firebase emulators:exec --only database mocha"
+  },
+  "dependencies": {
+    "@firebase/testing": "^0.19.2",
+    "mocha": "^7.1.2"
+  }
+}
