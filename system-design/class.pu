@@ -6,6 +6,7 @@ class MessageBoard {
     + deleteRoom() : void
     + archiveRoom() : void
     + importRoom() : Room
+    + updateRoom(room_id : string, room : Room) : void
 }
 
 class Room {
@@ -28,6 +29,7 @@ class Message {
     + nickname : string
     + text : string
     + timestamp : string
+    + is_hide: bool
     + react() : void
     + isReactedBy(user_id : string) : bool
     + isPostedBy(user_id : string) : bool
