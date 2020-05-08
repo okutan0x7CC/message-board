@@ -28,15 +28,15 @@ class Message {
     + nickname : string
     + text : string
     + timestamp : string
-    + reactGood() : void
+    + react() : void
     + isReactedBy(user_id : string) : bool
     + isPostedBy(user_id : string) : bool
 }
 Room "1" o-- "*" Message : posted <
 
-class ReactionGood {
-    + user_id : string
+class Reaction {
+    + user_ids : string[1..*]
 }
-Message "1" o-- "*" ReactionGood : reacted <
+Message "1" o-- "*" Reaction : reacted <
 
 @enduml
