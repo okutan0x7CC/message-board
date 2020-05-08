@@ -7,13 +7,14 @@
 <br>
 
 ## 構成
-`admin`, `client`, `projection` の 3 つは、それぞれ別の Vue.js のプロジェクトであり、 `functions` は Cloud Functions for Firebase のプロジェクトである。
+`admin`, `client`, `projection` の 3 つは、それぞれ別の Vue.js のプロジェクトであり、 `functions` は Cloud Functions for Firebase のプロジェクト、 `database` は Realtime Database のプロジェクトである。
 ```
 message-board  // Firebase プロジェクト
 |- admin  // 管理画面 (Vue.js プロジェクト)
 |- client  // クライアント画面 (Vue.js プロジェクト)
 |- projection  // 投影画面 (Vue.js プロジェクト)
 |- functions  // Cloud Functions
+|- database // Realtime Database
 ```
 
 <br>
