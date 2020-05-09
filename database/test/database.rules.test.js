@@ -1,5 +1,17 @@
+/*
+ * - 概要
+ *      Firebase Realtime Database のセキュリティルールに使われる database.rules.json をテストする
+ * - 実行コマンド
+ *      `npm run test`
+ * - 補足
+ *      admin とは AdminSDK を使用するユーザーではなく、email のドメインが管理者所有となっているユーザーである
+ * - 参考 : Realtime Database emulator quickstart
+ *      https://github.com/firebase/quickstart-nodejs/tree/master/database-emulator/javascript-quickstart
+ */
+
 const firebase = require("@firebase/testing");
 const fs = require("fs");
+const moment = require("moment");
 
 /*
  * ============
@@ -55,41 +67,140 @@ after(async () => {
 });
 
 describe("room", () => {
-    it("cannot be created by user", async () => {});
-    it("cannot be deleted by user", async () => {});
-    it("cannot be updated by user", async () => {});
-    it("cannot be fetched by user in not public", async () => {});
-    it("can be fetched by user", async () => {});
+    it("cannot be created by user", async () => {
+        const alice = authedApp({ uid: "user_id_1" });
+        await firebase.assertFails(
+            alice.ref("rooms/new_room").set({ title: "new_room_title" })
+        );
+    });
+
+    it("cannot be deleted by user", async () => {
+        await adminApp().ref("rooms/delete_target_room").set({
+            title: "delete_target_room_title",
+        });
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertFails(
+            alice.ref("rooms/delete_target_room").remove()
+        );
+    });
+
+    it("cannot be updated by user", async () => {
+        await adminApp().ref("rooms/update_target_room").set({
+            title: "update_target_room_title",
+        });
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertFails(
+            alice.ref("rooms").update({
+                update_target_room: {
+                    title: "updated",
+                },
+            })
+        );
+    });
+
+    it("cannot be fetched by user in not public", async () => {
+        const date = firebase.firestore.Timestamp.now().toDate();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                before_public: {
+                    title: "before_public_title",
+                    public_start_datetime: moment(date)
+                        .add(2, "minutes")
+                        .format("YYYY-MM-DD hh:mm:ss"),
+                    public_end_datetime: moment(date)
+                        .add(5, "minutes")
+                        .format("YYYY-MM-DD hh:mm:ss"),
+                },
+                after_public: {
+                    title: "after_public_title",
+                    public_start_datetime: moment(date)
+                        .subtract(5, "minutes")
+                        .format("YYYY-MM-DD hh:mm:ss"),
+                    public_end_datetime: moment(date)
+                        .subtract(2, "minutes")
+                        .format("YYYY-MM-DD hh:mm:ss"),
+                },
+            });
+
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertFails(
+            alice.ref("rooms/before_public").once("value")
+        );
+        await firebase.assertFails(
+            alice.ref("rooms/after_public").once("value")
+        );
+    });
+
+    it("can be fetched by user", async () => {
+        const date = firebase.firestore.Timestamp.now().toDate();
+        await adminApp()
+            .ref("rooms/in_public")
+            .set({
+                title: "in_public_title",
+                public_start_datetime: moment(date)
+                    .subtract(2, "minutes")
+                    .format("YYYY-MM-DD hh:mm:ss"),
+                public_end_datetime: moment(date)
+                    .add(2, "minutes")
+                    .format("YYYY-MM-DD hh:mm:ss"),
+            });
+
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertSucceeds(
+            alice.ref("rooms/in_public").once("value")
+        );
+    });
 
     it("can be created by admin", async () => {});
+
     it("can be deleted by admin", async () => {});
+
     it("can be updated by admin", async () => {});
+
     it("can be fetched by admin", async () => {});
+
     it("can be fetched by admin in not public", async () => {});
 });
 
 describe("message", () => {
     it("cannot be deleted by user", async () => {});
+
     it("cannot be updated by user", async () => {});
+
     it("cannot be created by user in not postable", async () => {});
+
     it("cannot be created by user without text", async () => {});
+
     it("cannot be created by user without nickname", async () => {});
+
     it("cannot be created by user without timestamp", async () => {});
+
     it("cannot be created by user without user_id", async () => {});
+
     it("cannot be created by user who not match auth.id", async () => {});
+
     it("can be created by user", async () => {});
+
     it("can be fetched by user", async () => {});
 
     it("can be created by admin", async () => {});
+
     it("can be deleted by admin", async () => {});
+
     it("can be updated by admin", async () => {});
+
     it("can be fetched by admin", async () => {});
 });
 
 describe("reaction", () => {
     it("cannot be created by user who not match auth.id", async () => {});
+
     it("cannot be deleted by user who not match auth.id", async () => {});
+
     it("cannot be created by user in not postable", async () => {});
+
     it("can be created by user", async () => {});
+
     it("can be deleted by user", async () => {});
 });

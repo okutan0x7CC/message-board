@@ -11,10 +11,10 @@ class MessageBoard {
 
 class Room {
     + title : string
-    + public_start_datetime : datetime
-    + public_end_datetime : datetime
-    + post_start_datetime : datetime
-    + post_end_datetime : datetime
+    + public_start_datetime : datetime (JST)
+    + public_end_datetime : datetime (JST)
+    + post_start_datetime : datetime (JST)
+    + post_end_datetime : datetime (JST)
     + isPublicNow() : bool
     + canPostNow() : bool
     + fetchMessages() : Message[*]
