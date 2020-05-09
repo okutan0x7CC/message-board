@@ -61,9 +61,9 @@ message-board  // Firebase プロジェクト
 
 ```
 firebase use staging
-firebase functions:config:set admin_allowed_ips="XXX.XXX.XXX.XXX,YYY.YYY.YYY.YYY"
+firebase functions:config:set functions.admin_allowed_ips="XXX.XXX.XXX.XXX,YYY.YYY.YYY.YYY"
 firebase use production
-firebase functions:config:set admin_allowed_ips="XXX.XXX.XXX.XXX,YYY.YYY.YYY.YYY"
+firebase functions:config:set functions.admin_allowed_ips="XXX.XXX.XXX.XXX,YYY.YYY.YYY.YYY"
 ```
 
 ### 6. （Firebase プロジェクトを新規に作る場合）admin として扱うメールアドレス/ドメインの設定
@@ -71,11 +71,11 @@ firebase functions:config:set admin_allowed_ips="XXX.XXX.XXX.XXX,YYY.YYY.YYY.YYY
 
 ```
 firebase use staging
-firebase functions:config:set admin_email_domains="admin.com,admin.jp"
-firebase functions:config:set admin_emails="alice@xxx.com,bob@yyy.com"
+firebase functions:config:set env.admin_email_domains="admin.com,admin.jp"
+firebase functions:config:set env.admin_emails="alice@xxx.com,bob@yyy.com"
 firebase use production
-firebase functions:config:set admin_email_domains="admin.com,admin.jp"
-firebase functions:config:set admin_emails="alice@xxx.com,bob@yyy.com"
+firebase functions:config:set env.admin_email_domains="admin.com,admin.jp"
+firebase functions:config:set env.admin_emails="alice@xxx.com,bob@yyy.com"
 ```
 
 ### 7. 環境変数の自動生成
@@ -83,7 +83,7 @@ firebase functions:config:set admin_emails="alice@xxx.com,bob@yyy.com"
 なお、デプロイコマンドには組み込まれているため、デプロイのたびに本コマンドを実行する必要はない。
 
 ```
-node generate_env.js
+python generate_env.py
 ```
 
 ### 8. ライブラリのインストール

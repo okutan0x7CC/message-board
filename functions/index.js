@@ -4,7 +4,7 @@ const fs = require("fs");
 exports.adminIndexHtml = functions.https.onRequest((req, res) => {
     const allowed_ips = functions
         .config()
-        .admin_allowed_ips.split(",")
+        .functions.admin_allowed_ips.split(",")
         .map((ip) => ip.trim());
     const client_ip = req.headers["fastly-temp-xff"].split(",").pop().trim();
     const is_allowed = allowed_ips.indexOf(client_ip) !== -1;
