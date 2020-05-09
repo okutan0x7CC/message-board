@@ -58,6 +58,9 @@ message-board  // Firebase プロジェクト
 ### 5. admin にアクセス許可する IP アドレスを設定する（Firebase プロジェクトを新規に作る場合）
 次の Firebase CLI コマンドで admin にアクセス許可する IP アドレスを設定する。複数設定したい場合などは `./functions/index.js` を含めて適宜変更する。
 ```
+firebase use staging
+firebase functions:config:set admin.allowed_ip="XXX.XXX.XXX.XXX"
+firebase use production
 firebase functions:config:set admin.allowed_ip="XXX.XXX.XXX.XXX"
 ```
 
