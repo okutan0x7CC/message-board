@@ -8,6 +8,7 @@
 
 ## 構成
 `admin`, `client`, `projection` の 3 つは、それぞれ別の Vue.js のプロジェクトであり、 `functions` は Cloud Functions for Firebase のプロジェクト、 `database` は Realtime Database のプロジェクトである。
+
 ```
 message-board  // Firebase プロジェクト
 |- admin  // 管理画面 (Vue.js プロジェクト)
@@ -107,7 +108,8 @@ cd database && npm install && cd ..
 
 ## 環境変数の設定
 各プロジェクトの `.env` は自動生成であるため、環境変数を設定する場合には [Firebase CLI の環境変数](https://firebase.google.com/docs/functions/config-env) で設定する必要がある。  
-また、各プロジェクトに生成される `.env` は全てが同じ内容になる。
-
+Firebase CLI の環境変数でキーが `env.***` と設定されたもののみ、 `.env` に出力される。
+また、`functions` を除いた各プロジェクトに生成され、内容は全て同じである。  
+詳しくは `./generate_env.py` を参照すること。
 
 <br>

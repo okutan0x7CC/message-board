@@ -48,6 +48,8 @@ select yn in Yes No; do
     esac
 done
 
+python generate_env.py
+
 printf "\n== Start deployment! ==\n"
 
 case $TARGET in
