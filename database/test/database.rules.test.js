@@ -13,6 +13,13 @@ const firebase = require("@firebase/testing");
 const fs = require("fs");
 const moment = require("moment");
 
+// init env variables
+require("dotenv").config();
+const admin_emails = process.env.ADMIN_EMAILS.split(",").map((e) => e.trim());
+const admin_email_domains = process.env.ADMIN_EMAIL_DOMAINS.split(
+    ","
+).map((e) => e.trim());
+
 /*
  * ============
  *    Setup
@@ -108,15 +115,9 @@ describe("room", () => {
                     public_start_datetime: moment(date)
                         .add(2, "minutes")
                         .format("YYYY-MM-DD hh:mm:ss"),
-                    public_end_datetime: moment(date)
-                        .add(5, "minutes")
-                        .format("YYYY-MM-DD hh:mm:ss"),
                 },
                 after_public: {
                     title: "after_public_title",
-                    public_start_datetime: moment(date)
-                        .subtract(5, "minutes")
-                        .format("YYYY-MM-DD hh:mm:ss"),
                     public_end_datetime: moment(date)
                         .subtract(2, "minutes")
                         .format("YYYY-MM-DD hh:mm:ss"),
@@ -152,15 +153,143 @@ describe("room", () => {
         );
     });
 
-    it("can be created by admin", async () => {});
+    it("can be created by admin", async () => {
+        for (const [i, email] of admin_emails.entries()) {
+            const admin = authedApp({ uid: "admin", email: email });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_${i}`).set({
+                    title: "admin",
+                })
+            );
+        }
 
-    it("can be deleted by admin", async () => {});
+        for (const [i, email_domain] of admin_email_domains.entries()) {
+            const admin = authedApp({
+                uid: "admin",
+                email: `xxx@${email_domain}`,
+            });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_domain_${i}`).set({
+                    title: "admin",
+                })
+            );
+        }
+    });
 
-    it("can be updated by admin", async () => {});
+    it("can be deleted by admin", async () => {
+        for (const [i, email] of admin_emails.entries()) {
+            await adminApp().ref(`rooms/email_${i}`).set({
+                title: "admin",
+            });
+            const admin = authedApp({ uid: "admin", email: email });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_${i}`).remove()
+            );
+        }
 
-    it("can be fetched by admin", async () => {});
+        for (const [i, email_domain] of admin_email_domains.entries()) {
+            await adminApp().ref(`rooms/email_domain_${i}`).set({
+                title: "admin",
+            });
+            const admin = authedApp({
+                uid: "admin",
+                email: `xxx@${email_domain}`,
+            });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_domain_${i}`).remove()
+            );
+        }
+    });
 
-    it("can be fetched by admin in not public", async () => {});
+    it("can be updated by admin", async () => {
+        for (const [i, email] of admin_emails.entries()) {
+            await adminApp().ref(`rooms/email_${i}`).set({
+                title: "admin",
+            });
+            const admin = authedApp({ uid: "admin", email: email });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_${i}`).update({
+                    title: "updated",
+                })
+            );
+        }
+
+        for (const [i, email_domain] of admin_email_domains.entries()) {
+            await adminApp().ref(`rooms/email_domain_${i}`).set({
+                title: "admin",
+            });
+            const admin = authedApp({
+                uid: "admin",
+                email: `xxx@${email_domain}`,
+            });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_domain_${i}`).update({
+                    title: "updated",
+                })
+            );
+        }
+    });
+
+    it("can be fetched by admin", async () => {
+        for (const [i, email] of admin_emails.entries()) {
+            await adminApp().ref(`rooms/email_${i}`).set({
+                title: "admin",
+            });
+            const admin = authedApp({ uid: "admin", email: email });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_${i}`).once("value")
+            );
+        }
+
+        for (const [i, email_domain] of admin_email_domains.entries()) {
+            await adminApp().ref(`rooms/email_domain_${i}`).set({
+                title: "admin",
+            });
+            const admin = authedApp({
+                uid: "admin",
+                email: `xxx@${email_domain}`,
+            });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_domain_${i}`).once("value")
+            );
+        }
+    });
+
+    it("can be fetched by admin in not public", async () => {
+        const date = firebase.firestore.Timestamp.now().toDate();
+        for (const [i, email] of admin_emails.entries()) {
+            await adminApp()
+                .ref(`rooms/email_${i}`)
+                .set({
+                    title: "admin",
+                    public_start_datetime: moment(date)
+                        .add(5, "minutes")
+                        .format("YYYY-MM-DD hh:mm:ss"),
+                });
+            const admin = authedApp({ uid: "admin", email: email });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_${i}`).once("value")
+            );
+        }
+
+        for (const [i, email_domain] of admin_email_domains.entries()) {
+            await adminApp()
+                .ref(`rooms/email_domain_${i}`)
+                .set({
+                    title: "admin",
+                    public_start_datetime: moment(date)
+                        .add(5, "minutes")
+                        .format("YYYY-MM-DD hh:mm:ss"),
+                });
+            const admin = authedApp({
+                uid: "admin",
+                email: `xxx@${email_domain}`,
+            });
+            await firebase.assertSucceeds(
+                admin.ref(`rooms/email_domain_${i}`).once("value")
+            );
+        }
+    });
 });
 
 describe("message", () => {
