@@ -113,3 +113,15 @@ Firebase CLI の環境変数でキーが `env.***` と設定されたものの�
 詳しくは `./generate_env.py` を参照すること。
 
 <br>
+
+## セキュリティルールのテスト
+`./database` では、Realtime Database のセキュリティルール `./database/database.rules.json` をテストしている。  
+実行するには次のコマンドを入力する。
+
+```
+cd ./database && npm run test
+```
+
+なお、 `./database/.env` の値を参照しているため、もし環境変数が更新されているのであれば、テスト前に `python generate_env.py` を実行することが望ましい。
+
+<br>
