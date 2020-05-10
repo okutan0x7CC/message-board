@@ -15,10 +15,12 @@ const moment = require("moment");
 
 // init env variables
 require("dotenv").config();
-const admin_emails = process.env.ADMIN_EMAILS.split(",").map((e) => e.trim());
-const admin_email_domains = process.env.ADMIN_EMAIL_DOMAINS.split(
-    ","
-).map((e) => e.trim());
+let admin_emails = [];
+if (process.env.ADMIN_EMAILS_FOR_TESTING !== undefined) {
+    admin_emails = process.env.ADMIN_EMAILS_FOR_TESTING.split(",").map((e) =>
+        e.trim()
+    );
+}
 
 /*
  * ============
@@ -162,18 +164,6 @@ describe("room", () => {
                 })
             );
         }
-
-        for (const [i, email_domain] of admin_email_domains.entries()) {
-            const admin = authedApp({
-                uid: "admin",
-                email: `xxx@${email_domain}`,
-            });
-            await firebase.assertSucceeds(
-                admin.ref(`rooms/email_domain_${i}`).set({
-                    title: "admin",
-                })
-            );
-        }
     });
 
     it("can be deleted by admin", async () => {
@@ -184,19 +174,6 @@ describe("room", () => {
             const admin = authedApp({ uid: "admin", email: email });
             await firebase.assertSucceeds(
                 admin.ref(`rooms/email_${i}`).remove()
-            );
-        }
-
-        for (const [i, email_domain] of admin_email_domains.entries()) {
-            await adminApp().ref(`rooms/email_domain_${i}`).set({
-                title: "admin",
-            });
-            const admin = authedApp({
-                uid: "admin",
-                email: `xxx@${email_domain}`,
-            });
-            await firebase.assertSucceeds(
-                admin.ref(`rooms/email_domain_${i}`).remove()
             );
         }
     });
@@ -213,21 +190,6 @@ describe("room", () => {
                 })
             );
         }
-
-        for (const [i, email_domain] of admin_email_domains.entries()) {
-            await adminApp().ref(`rooms/email_domain_${i}`).set({
-                title: "admin",
-            });
-            const admin = authedApp({
-                uid: "admin",
-                email: `xxx@${email_domain}`,
-            });
-            await firebase.assertSucceeds(
-                admin.ref(`rooms/email_domain_${i}`).update({
-                    title: "updated",
-                })
-            );
-        }
     });
 
     it("can be fetched by admin", async () => {
@@ -238,19 +200,6 @@ describe("room", () => {
             const admin = authedApp({ uid: "admin", email: email });
             await firebase.assertSucceeds(
                 admin.ref(`rooms/email_${i}`).once("value")
-            );
-        }
-
-        for (const [i, email_domain] of admin_email_domains.entries()) {
-            await adminApp().ref(`rooms/email_domain_${i}`).set({
-                title: "admin",
-            });
-            const admin = authedApp({
-                uid: "admin",
-                email: `xxx@${email_domain}`,
-            });
-            await firebase.assertSucceeds(
-                admin.ref(`rooms/email_domain_${i}`).once("value")
             );
         }
     });
@@ -269,24 +218,6 @@ describe("room", () => {
             const admin = authedApp({ uid: "admin", email: email });
             await firebase.assertSucceeds(
                 admin.ref(`rooms/email_${i}`).once("value")
-            );
-        }
-
-        for (const [i, email_domain] of admin_email_domains.entries()) {
-            await adminApp()
-                .ref(`rooms/email_domain_${i}`)
-                .set({
-                    title: "admin",
-                    public_start_datetime: moment(date)
-                        .add(5, "minutes")
-                        .format("YYYY-MM-DD hh:mm:ss"),
-                });
-            const admin = authedApp({
-                uid: "admin",
-                email: `xxx@${email_domain}`,
-            });
-            await firebase.assertSucceeds(
-                admin.ref(`rooms/email_domain_${i}`).once("value")
             );
         }
     });

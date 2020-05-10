@@ -68,15 +68,16 @@ firebase functions:config:set functions.admin_allowed_ips="XXX.XXX.XXX.XXX,YYY.Y
 ```
 
 ### 6. （Firebase プロジェクトを新規に作る場合）admin として扱うメールアドレス/ドメインの設定
-次の Firebase CLI コマンドで admin として扱うメールアドレス/ドメインを設定する。
+次の Firebase CLI コマンドで admin として扱うメールアドレス/ドメインを正規表現で設定する。  
+また、セキュリティルールのテストで使用するメールアドレス/ドメイン（カンマ区切りで複数可）を設定する。  
 
 ```
 firebase use staging
-firebase functions:config:set env.admin_email_domains="admin.com,admin.jp"
-firebase functions:config:set env.admin_emails="alice@xxx.com,bob@yyy.com"
+firebase functions:config:set env.admin_email_regex=".*@(xxx\.com|yyy\.jp)$"
+firebase functions:config:set env.admin_emails_for_testing="zzz@xxx.com,zzz@yyy.jp"
 firebase use production
-firebase functions:config:set env.admin_email_domains="admin.com,admin.jp"
-firebase functions:config:set env.admin_emails="alice@xxx.com,bob@yyy.com"
+firebase functions:config:set env.admin_email_regex=".*@(xxx\.com|yyy\.jp)$"
+firebase functions:config:set env.admin_emails_for_testing="zzz@xxx.com,zzz@yyy.jp"
 ```
 
 ### 7. 環境変数の自動生成
@@ -113,6 +114,20 @@ Firebase CLI の環境変数でキーが `env.***` と設定されたものの�
 詳しくは `./generate_env.py` を参照すること。
 
 <br>
+
+### admin として扱うメールアドレスの設定
+本リポジトリにおいて、 `admin` とは、 Firebase AdminSDK のことではなく、Firebase Authentication アカウントにおける管理者のことを指す。  
+また、Realtime Database セキュリティルールにおける管理者の識別はメールアドレスに対して正規表現を用いて行う。  
+なお、セキュリティルールのテストには `admin` となるメールアドレスを使用する必要があるため、正規表現に一致するメールアドレスをサンプルとして設定しておく必要がある。
+
+```
+firebase use staging
+firebase functions:config:set env.admin_email_regex=".*@(xxx\.com|yyy\.jp)$"
+firebase functions:config:set env.admin_emails_for_testing="zzz@xxx.com,zzz@yyy.jp"
+firebase use production
+firebase functions:config:set env.admin_email_regex=".*@(xxx\.com|yyy\.jp)$"
+firebase functions:config:set env.admin_emails_for_testing="zzz@xxx.com,zzz@yyy.jp"
+```
 
 ## セキュリティルールのテスト
 `./database` では、Realtime Database のセキュリティルール `./database/database.rules.json` をテストしている。  
