@@ -11,7 +11,7 @@ class MessageBoard {
 
 class Room {
     + title : string
-    + public_start_unixtime : number
+    + public_start_unixtime : number (milli seconds)
     + public_end_unixtime : number (milli seconds)
     + post_start_unixtime : number (milli seconds)
     + post_end_unixtime : number (milli seconds)
