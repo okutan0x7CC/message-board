@@ -124,6 +124,9 @@ describe("room", () => {
                         .subtract(2, "minutes")
                         .valueOf(),
                 },
+                not_set_public: {
+                    title: "not_set_public_title",
+                },
             });
 
         const alice = authedApp({ uid: "alice", email: "alice@alice.com" });
@@ -132,6 +135,9 @@ describe("room", () => {
         );
         await firebase.assertFails(
             alice.ref("rooms/after_public").once("value")
+        );
+        await firebase.assertFails(
+            alice.ref("rooms/not_set_public").once("value")
         );
     });
 
