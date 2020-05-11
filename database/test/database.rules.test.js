@@ -155,6 +155,17 @@ describe("room", () => {
         );
     });
 
+    it("cannot be created by admin without title", async () => {
+        for (const [i, email] of admin_emails.entries()) {
+            const admin = authedApp({ uid: "admin", email: email });
+            await firebase.assertFails(
+                admin.ref(`rooms/email_${i}`).set({
+                    title: "",
+                })
+            );
+        }
+    });
+
     it("can be created by admin", async () => {
         for (const [i, email] of admin_emails.entries()) {
             const admin = authedApp({ uid: "admin", email: email });
