@@ -77,7 +77,7 @@ after(async () => {
 
 describe("room", () => {
     it("cannot be created by user", async () => {
-        const alice = authedApp({ uid: "user_id_1" });
+        const alice = authedApp({ uid: "user_id_1", email: "alice@alice.com" });
         await firebase.assertFails(
             alice.ref("rooms/new_room").set({ title: "new_room_title" })
         );
@@ -87,7 +87,7 @@ describe("room", () => {
         await adminApp().ref("rooms/delete_target_room").set({
             title: "delete_target_room_title",
         });
-        const alice = authedApp({ uid: "alice" });
+        const alice = authedApp({ uid: "alice", email: "alice@alice.com" });
         await firebase.assertFails(
             alice.ref("rooms/delete_target_room").remove()
         );
@@ -97,7 +97,7 @@ describe("room", () => {
         await adminApp().ref("rooms/update_target_room").set({
             title: "update_target_room_title",
         });
-        const alice = authedApp({ uid: "alice" });
+        const alice = authedApp({ uid: "alice", email: "alice@alice.com" });
         await firebase.assertFails(
             alice.ref("rooms").update({
                 update_target_room: {
@@ -108,25 +108,25 @@ describe("room", () => {
     });
 
     it("cannot be fetched by user in not public", async () => {
-        const date = firebase.firestore.Timestamp.now().toDate();
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
         await adminApp()
             .ref("rooms")
             .set({
                 before_public: {
                     title: "before_public_title",
-                    public_start_datetime: moment(date)
+                    public_start_unixtime: moment(now_unixtime)
                         .add(2, "minutes")
-                        .format("YYYY-MM-DD hh:mm:ss"),
+                        .valueOf(),
                 },
                 after_public: {
                     title: "after_public_title",
-                    public_end_datetime: moment(date)
+                    public_end_unixtime: moment(now_unixtime)
                         .subtract(2, "minutes")
-                        .format("YYYY-MM-DD hh:mm:ss"),
+                        .valueOf(),
                 },
             });
 
-        const alice = authedApp({ uid: "alice" });
+        const alice = authedApp({ uid: "alice", email: "alice@alice.com" });
         await firebase.assertFails(
             alice.ref("rooms/before_public").once("value")
         );
@@ -136,20 +136,20 @@ describe("room", () => {
     });
 
     it("can be fetched by user", async () => {
-        const date = firebase.firestore.Timestamp.now().toDate();
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
         await adminApp()
             .ref("rooms/in_public")
             .set({
                 title: "in_public_title",
-                public_start_datetime: moment(date)
+                public_start_unixtime: moment(now_unixtime)
                     .subtract(2, "minutes")
-                    .format("YYYY-MM-DD hh:mm:ss"),
-                public_end_datetime: moment(date)
+                    .valueOf(),
+                public_end_unixtime: moment(now_unixtime)
                     .add(2, "minutes")
-                    .format("YYYY-MM-DD hh:mm:ss"),
+                    .valueOf(),
             });
 
-        const alice = authedApp({ uid: "alice" });
+        const alice = authedApp({ uid: "alice", email: "alice@alice.com" });
         await firebase.assertSucceeds(
             alice.ref("rooms/in_public").once("value")
         );
@@ -205,15 +205,15 @@ describe("room", () => {
     });
 
     it("can be fetched by admin in not public", async () => {
-        const date = firebase.firestore.Timestamp.now().toDate();
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
         for (const [i, email] of admin_emails.entries()) {
             await adminApp()
                 .ref(`rooms/email_${i}`)
                 .set({
                     title: "admin",
-                    public_start_datetime: moment(date)
+                    public_start_unixtime: moment(now_unixtime)
                         .add(5, "minutes")
-                        .format("YYYY-MM-DD hh:mm:ss"),
+                        .valueOf(),
                 });
             const admin = authedApp({ uid: "admin", email: email });
             await firebase.assertSucceeds(
