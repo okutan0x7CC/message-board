@@ -274,7 +274,53 @@ describe("message", () => {
         );
     });
 
-    it("cannot be created by user in not postable", async () => {});
+    it("cannot be created by user in not postable", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                before_postable: {
+                    title: "before_postable_title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+                after_postable: {
+                    title: "after_postable_title",
+                    post_end_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                },
+                not_set_postable: {
+                    title: "not_set_postable_title",
+                },
+            });
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertFails(
+            alice.ref("rooms/before_postable/message_1").set({
+                user_id: "alice",
+                nickname: "alice_nickname",
+                text: "message_1_text",
+                timestamp: now_unixtime,
+            })
+        );
+        await firebase.assertFails(
+            alice.ref("rooms/after_postable/message_1").set({
+                user_id: "alice",
+                nickname: "alice_nickname",
+                text: "message_1_text",
+                timestamp: now_unixtime,
+            })
+        );
+        await firebase.assertFails(
+            alice.ref("rooms/not_set_postable/message_1").set({
+                user_id: "alice",
+                nickname: "alice_nickname",
+                text: "message_1_text",
+                timestamp: now_unixtime,
+            })
+        );
+    });
 
     it("cannot be created by user without text", async () => {});
 
