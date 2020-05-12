@@ -241,9 +241,38 @@ describe("room", () => {
 });
 
 describe("message", () => {
-    it("cannot be deleted by user", async () => {});
+    it("cannot be deleted by user", async () => {
+        await adminApp().ref("rooms/room_id_1/message_1").set({
+            user_id: "alice",
+            nickname: "alice_nickname",
+            text: "message_1_text",
+            timestamp: firebase.firestore.Timestamp.now().toMillis(),
+        });
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1/message_1").remove()
+        );
+    });
 
-    it("cannot be updated by user", async () => {});
+    it("cannot be updated by user", async () => {
+        await adminApp().ref("rooms/room_id_1/message_1").set({
+            user_id: "alice",
+            nickname: "alice_nickname",
+            text: "message_1_text",
+            timestamp: firebase.firestore.Timestamp.now().toMillis(),
+        });
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1").update({
+                message_1: {
+                    user_id: "alice",
+                    nickname: "alice_nickname",
+                    text: "updated",
+                    timestamp: firebase.firestore.Timestamp.now().toMillis(),
+                },
+            })
+        );
+    });
 
     it("cannot be created by user in not postable", async () => {});
 
