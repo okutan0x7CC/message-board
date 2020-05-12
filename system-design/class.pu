@@ -11,10 +11,10 @@ class MessageBoard {
 
 class Room {
     + title : string
-    + public_start_unixtime : number (milli seconds)
-    + public_end_unixtime : number (milli seconds)
-    + post_start_unixtime : number (milli seconds)
-    + post_end_unixtime : number (milli seconds)
+    + public_start_unixtime : number? (milli seconds)
+    + public_end_unixtime : number? (milli seconds)
+    + post_start_unixtime : number? (milli seconds)
+    + post_end_unixtime : number? (milli seconds)
     + isPublicNow() : bool
     + canPostNow() : bool
     + fetchMessages() : Message[*]
@@ -29,7 +29,7 @@ class Message {
     + nickname : string
     + text : string
     + timestamp : string
-    + is_hide: bool
+    + is_hide: bool?
     + react() : void
     + isReactedBy(user_id : string) : bool
     + isPostedBy(user_id : string) : bool
