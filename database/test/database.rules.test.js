@@ -241,39 +241,6 @@ describe("room", () => {
 });
 
 describe("message", () => {
-    it("cannot be deleted by user", async () => {
-        await adminApp().ref("rooms/room_id_1/message_1").set({
-            user_id: "alice",
-            nickname: "alice_nickname",
-            text: "message_1_text",
-            timestamp: firebase.firestore.Timestamp.now().toMillis(),
-        });
-        const alice = authedApp({ uid: "alice" });
-        await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").remove()
-        );
-    });
-
-    it("cannot be updated by user", async () => {
-        await adminApp().ref("rooms/room_id_1/message_1").set({
-            user_id: "alice",
-            nickname: "alice_nickname",
-            text: "message_1_text",
-            timestamp: firebase.firestore.Timestamp.now().toMillis(),
-        });
-        const alice = authedApp({ uid: "alice" });
-        await firebase.assertFails(
-            alice.ref("rooms/room_id_1").update({
-                message_1: {
-                    user_id: "alice",
-                    nickname: "alice_nickname",
-                    text: "updated",
-                    timestamp: firebase.firestore.Timestamp.now().toMillis(),
-                },
-            })
-        );
-    });
-
     it("cannot be created by user in not postable", async () => {
         const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
         await adminApp()
@@ -322,7 +289,113 @@ describe("message", () => {
         );
     });
 
-    it("cannot be created by user without text", async () => {});
+    it("cannot be deleted by user", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "before_postable_title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        await adminApp().ref("rooms/room_id_1/message_1").set({
+            user_id: "alice",
+            nickname: "alice_nickname",
+            text: "message_1_text",
+            timestamp: now_unixtime,
+        });
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1/message_1").remove()
+        );
+    });
+
+    it("cannot be updated by user", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "before_postable_title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        await adminApp().ref("rooms/room_id_1/message_1").set({
+            user_id: "alice",
+            nickname: "alice_nickname",
+            text: "message_1_text",
+            timestamp: now_unixtime,
+        });
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1").update({
+                message_1: {
+                    user_id: "alice",
+                    nickname: "alice_nickname",
+                    text: "updated",
+                    timestamp: now_unixtime,
+                },
+            })
+        );
+    });
+
+    it("cannot be created by user without required params", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "before_postable_title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        const alice = authedApp({ uid: "alice" });
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1/message_1").set({})
+        );
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1/message_1").set({
+                user_id: "alice",
+            })
+        );
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1/message_1").set({
+                user_id: "alice",
+                text: "message_1_text",
+            })
+        );
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1/message_1").set({
+                user_id: "alice",
+                text: "message_1_text",
+                nickname: "alice_nickname",
+            })
+        );
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1/message_1").set({
+                user_id: "alice",
+                text: "message_1_text",
+                nickname: "alice_nickname",
+                timestamp: now_unixtime,
+            })
+        );
+    });
 
     it("cannot be created by user without nickname", async () => {});
 
