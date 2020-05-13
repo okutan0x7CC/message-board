@@ -433,7 +433,39 @@ describe("message", () => {
         );
     });
 
-    it("cannot be created by user who not match auth claim", async () => {});
+    it("cannot be created by user who not match auth claim", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "before_postable_title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1/message_1").set({
+                user_id: "not_alice",
+                text: "message_1_text",
+                nickname: "alice_nickname",
+                timestamp: now_unixtime,
+            })
+        );
+        await firebase.assertFails(
+            alice.ref("rooms/room_id_1/message_1").set({
+                user_id: "alice",
+                text: "message_1_text",
+                nickname: "not_alice_nickname",
+                timestamp: now_unixtime,
+            })
+        );
+    });
 
     it("can be created by user", async () => {});
 
