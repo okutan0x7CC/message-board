@@ -624,15 +624,48 @@ describe("reaction", () => {
             nickname: "bob_nickname",
             timestamp: now_unixtime,
         });
+        adminApp().ref("reactions/room_id_1/message_1/reaction_id_1").set({
+            carol: true,
+        });
         const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
         await firebase.assertFails(
             alice.ref("reactions/room_id_1/message_id_1/reaction_id_1").set({
-                user_ids: ["not_alice"],
+                not_alice: true,
             })
         );
     });
 
-    it("cannot be deleted by user who not match auth.id", async () => {});
+    it("cannot be deleted by user who not match auth.id", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        adminApp().ref("messages/room_id_1/message_1").set({
+            user_id: "bob",
+            text: "message_1_text",
+            nickname: "bob_nickname",
+            timestamp: now_unixtime,
+        });
+        adminApp().ref("reactions/room_id_1/message_1/reaction_id_1").set({
+            carol: true,
+        });
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertFails(
+            alice
+                .ref("reactions/room_id_1/message_id_1/reaction_id_1/carol")
+                .remove()
+        );
+    });
 
     it("can be created by user", async () => {});
 
