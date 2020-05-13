@@ -264,7 +264,7 @@ describe("message", () => {
             });
         const alice = authedApp({ uid: "alice" });
         await firebase.assertFails(
-            alice.ref("rooms/before_postable/message_1").set({
+            alice.ref("messages/before_postable/message_1").set({
                 user_id: "alice",
                 nickname: "alice_nickname",
                 text: "message_1_text",
@@ -272,7 +272,7 @@ describe("message", () => {
             })
         );
         await firebase.assertFails(
-            alice.ref("rooms/after_postable/message_1").set({
+            alice.ref("messages/after_postable/message_1").set({
                 user_id: "alice",
                 nickname: "alice_nickname",
                 text: "message_1_text",
@@ -280,7 +280,7 @@ describe("message", () => {
             })
         );
         await firebase.assertFails(
-            alice.ref("rooms/not_set_postable/message_1").set({
+            alice.ref("messages/not_set_postable/message_1").set({
                 user_id: "alice",
                 nickname: "alice_nickname",
                 text: "message_1_text",
@@ -304,7 +304,7 @@ describe("message", () => {
                         .valueOf(),
                 },
             });
-        await adminApp().ref("rooms/room_id_1/message_1").set({
+        await adminApp().ref("messages/room_id_1/message_1").set({
             user_id: "alice",
             nickname: "alice_nickname",
             text: "message_1_text",
@@ -331,7 +331,7 @@ describe("message", () => {
                         .valueOf(),
                 },
             });
-        await adminApp().ref("rooms/room_id_1/message_1").set({
+        await adminApp().ref("messages/room_id_1/message_1").set({
             user_id: "alice",
             nickname: "alice_nickname",
             text: "message_1_text",
@@ -339,7 +339,7 @@ describe("message", () => {
         });
         const alice = authedApp({ uid: "alice" });
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1").update({
+            alice.ref("messages/room_id_1").update({
                 message_1: {
                     user_id: "alice",
                     nickname: "alice_nickname",
@@ -367,28 +367,28 @@ describe("message", () => {
             });
         const alice = authedApp({ uid: "alice" });
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").set({})
+            alice.ref("messages/room_id_1/message_1").set({})
         );
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").set({
+            alice.ref("messages/room_id_1/message_1").set({
                 user_id: "alice",
             })
         );
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").set({
+            alice.ref("messages/room_id_1/message_1").set({
                 user_id: "alice",
                 text: "message_1_text",
             })
         );
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").set({
+            alice.ref("messages/room_id_1/message_1").set({
                 user_id: "alice",
                 text: "message_1_text",
                 nickname: "alice_nickname",
             })
         );
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").set({
+            alice.ref("messages/room_id_1/message_1").set({
                 user_id: "alice",
                 text: "message_1_text",
                 nickname: "alice_nickname",
@@ -414,7 +414,7 @@ describe("message", () => {
             });
         const alice = authedApp({ uid: "alice" });
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").set({
+            alice.ref("messages/room_id_1/message_1").set({
                 user_id: "alice",
                 text: "",
                 nickname: "alice_nickname",
@@ -422,7 +422,7 @@ describe("message", () => {
             })
         );
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").set({
+            alice.ref("messages/room_id_1/message_1").set({
                 user_id: "alice",
                 text: "message_1_text",
                 nickname: "alice_nickname",
@@ -450,7 +450,7 @@ describe("message", () => {
             });
         const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").set({
+            alice.ref("messages/room_id_1/message_1").set({
                 user_id: "not_alice",
                 text: "message_1_text",
                 nickname: "alice_nickname",
@@ -458,7 +458,7 @@ describe("message", () => {
             })
         );
         await firebase.assertFails(
-            alice.ref("rooms/room_id_1/message_1").set({
+            alice.ref("messages/room_id_1/message_1").set({
                 user_id: "alice",
                 text: "message_1_text",
                 nickname: "not_alice_nickname",
@@ -467,9 +467,110 @@ describe("message", () => {
         );
     });
 
-    it("can be created by user", async () => {});
+    it("cannot be created by user when room does not exist", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertFails(
+            alice.ref("messages/not_exist/message_1").set({
+                user_id: "alice",
+                text: "message_1_text",
+                nickname: "alice_nickname",
+                timestamp: now_unixtime,
+            })
+        );
+    });
 
-    it("can be fetched by user", async () => {});
+    it("can be fetched by user when not public", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                before_public: {
+                    title: "title",
+                    public_start_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                    public_end_unixtime: moment(now_unixtime)
+                        .add(4, "minutes")
+                        .valueOf(),
+                },
+                after_public: {
+                    title: "title",
+                    public_start_unixtime: moment(now_unixtime)
+                        .subtract(4, "minutes")
+                        .valueOf(),
+                    public_end_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                },
+                not_set_public: {
+                    title: "title",
+                },
+            });
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertFails(
+            alice.ref("messages/before_public").once("value")
+        );
+        await firebase.assertFails(
+            alice.ref("messages/after_public").once("value")
+        );
+        await firebase.assertFails(
+            alice.ref("messages/not_set_public").once("value")
+        );
+    });
+
+    it("can be fetched by user when not public", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "before_postable_title",
+                    public_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    public_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertSucceeds(
+            alice.ref("messages/room_id_1").once("value")
+        );
+    });
+
+    it("can be created by user", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "before_postable_title",
+                    public_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    public_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertSucceeds(
+            alice.ref("messages/room_id_1/message_1").set({
+                user_id: "alice",
+                text: "message_1_text",
+                nickname: "alice_nickname",
+                timestamp: now_unixtime,
+            })
+        );
+    });
 
     it("can be created by admin", async () => {});
 
