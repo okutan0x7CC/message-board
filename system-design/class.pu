@@ -15,6 +15,7 @@ class Room {
     + public_end_unixtime : number? (milli seconds)
     + post_start_unixtime : number? (milli seconds)
     + post_end_unixtime : number? (milli seconds)
+    --
     + isPublicNow() : bool
     + canPostNow() : bool
     + fetchMessages() : Message[*]
@@ -30,6 +31,7 @@ class Message {
     + text : string
     + timestamp : string
     + is_hide: bool?
+    --
     + react() : void
     + isReactedBy(user_id : string) : bool
     + isPostedBy(user_id : string) : bool
@@ -37,7 +39,8 @@ class Message {
 Room "1" o-- "*" Message : posted <
 
 class Reaction {
-    + user_ids : string[1..*]
+    + {user_id} (dynamic property) : bool (always true)
+    --
 }
 Message "1" o-- "*" Reaction : reacted <
 
