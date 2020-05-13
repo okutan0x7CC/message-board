@@ -29,7 +29,7 @@ class Message {
     + user_id : string
     + nickname : string
     + text : string
-    + timestamp : string
+    + timestamp : number
     + is_hide: bool?
     --
     + react() : void
