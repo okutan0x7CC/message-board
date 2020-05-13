@@ -2,20 +2,20 @@
     "rooms": {
         "room_id_1": {
             "title": "room_id_1_title",
-            "public_start_datetime": "2020-05-08 09:00:00",
-            "public_end_datetime": "2020-05-10 23:59:59",
-            "post_start_datetime": "2020-05-08 10:00:00",
-            "post_end_datetime": "2020-05-08 18:00:00"
+            "public_start_unixtime": 1588932300,
+            "public_end_unixtime": 1588932300,
+            "post_start_unixtime": 1588932300,
+            "post_end_unixtime": 1588932300
         },
         "room_id_2": {
             "title": "room_id_2_title",
-            "public_start_datetime": "2020-05-09 09:00:00",
-            "public_end_datetime": "2020-05-11 23:59:59",
-            "post_start_datetime": "2020-05-09 10:00:00",
-            "post_end_datetime": "2020-05-09 18:00:00"
+            "public_start_unixtime": 1588932300,
+            "public_end_unixtime": 1588932300,
+            "post_start_unixtime": 1588932300,
+            "post_end_unixtime": 1588932300
         }
     },
-    "room_messages": {
+    "messages": {
         "room_id_1": {
             "message_id_1": {
                 "user_id": "user_id_1",
@@ -37,15 +37,15 @@
             }
         }
     },
-    "message_reactions": {
+    "reactions": {
         "room_id_1": {
-            "message_id_1": [
-                "user_id_3"
-            ],
-            "message_id_3": [
-                "user_id_1",
-                "user_id_2"
-            ]
+            "message_id_1": {
+                "user_id_2": true
+            },
+            "message_id_3": {
+                "user_id_1": true,
+                "user_id_2": true
+            }
         }
     }
 }
