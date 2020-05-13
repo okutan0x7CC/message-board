@@ -571,14 +571,6 @@ describe("message", () => {
             })
         );
     });
-
-    it("can be created by admin", async () => {});
-
-    it("can be deleted by admin", async () => {});
-
-    it("can be updated by admin", async () => {});
-
-    it("can be fetched by admin", async () => {});
 });
 
 describe("reaction", () => {
