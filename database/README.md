@@ -23,8 +23,8 @@
 したがって、管理者判定に必要な定数を隠蔽するために、セキュリティルール `database.rules.json` を `.gitignore` で Git 管理対象外としている。  
 
 ### テストにおける管理者判定に必要な定数を環境変数からの読み込む
-テストコードにおいて管理者の権限に関するテストを行うために、[Firebase CLI の環境変数](https://firebase.google.com/docs/functions/config-env) から[管理者判定の定数を呼び出している](https://github.com/okutan0x7CC/message-board/blob/master/database/test/database.rules.test.js#L17-L23)。   
-この定数は環境構築時に設定されているはずである。  
+テストコードにおいて管理者の権限に関するテストを行うために、[Firebase CLI の環境変数](https://firebase.google.com/docs/functions/config-env) から[管理者判定の定数（メールアドレスの正規表現）を呼び出している](https://github.com/okutan0x7CC/message-board/blob/master/database/test/database.rules.test.js#L17-L23)。   
+この定数（メールアドレスの正規表現）は環境構築時に設定されているはずである。  
 また、この定数は `cd .. && python generate_env.py` が実行されると `database.rules.json` 内に Firebase CLI の環境変数から埋め込まれる。すなわち、デプロイ時には自動で埋め込まれる。
 
 
