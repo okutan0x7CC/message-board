@@ -247,19 +247,19 @@ describe("message", () => {
             .ref("rooms")
             .set({
                 before_postable: {
-                    title: "before_postable_title",
+                    title: "title",
                     post_start_unixtime: moment(now_unixtime)
                         .add(2, "minutes")
                         .valueOf(),
                 },
                 after_postable: {
-                    title: "after_postable_title",
+                    title: "title",
                     post_end_unixtime: moment(now_unixtime)
                         .subtract(2, "minutes")
                         .valueOf(),
                 },
                 not_set_postable: {
-                    title: "not_set_postable_title",
+                    title: "title",
                 },
             });
         const alice = authedApp({ uid: "alice" });
@@ -295,7 +295,7 @@ describe("message", () => {
             .ref("rooms")
             .set({
                 room_id_1: {
-                    title: "before_postable_title",
+                    title: "title",
                     post_start_unixtime: moment(now_unixtime)
                         .subtract(2, "minutes")
                         .valueOf(),
@@ -322,7 +322,7 @@ describe("message", () => {
             .ref("rooms")
             .set({
                 room_id_1: {
-                    title: "before_postable_title",
+                    title: "title",
                     post_start_unixtime: moment(now_unixtime)
                         .subtract(2, "minutes")
                         .valueOf(),
@@ -356,7 +356,7 @@ describe("message", () => {
             .ref("rooms")
             .set({
                 room_id_1: {
-                    title: "before_postable_title",
+                    title: "title",
                     post_start_unixtime: moment(now_unixtime)
                         .subtract(2, "minutes")
                         .valueOf(),
@@ -403,7 +403,7 @@ describe("message", () => {
             .ref("rooms")
             .set({
                 room_id_1: {
-                    title: "before_postable_title",
+                    title: "title",
                     post_start_unixtime: moment(now_unixtime)
                         .subtract(2, "minutes")
                         .valueOf(),
@@ -439,7 +439,7 @@ describe("message", () => {
             .ref("rooms")
             .set({
                 room_id_1: {
-                    title: "before_postable_title",
+                    title: "title",
                     post_start_unixtime: moment(now_unixtime)
                         .subtract(2, "minutes")
                         .valueOf(),
@@ -525,7 +525,7 @@ describe("message", () => {
             .ref("rooms")
             .set({
                 room_id_1: {
-                    title: "before_postable_title",
+                    title: "title",
                     public_start_unixtime: moment(now_unixtime)
                         .subtract(2, "minutes")
                         .valueOf(),
@@ -546,7 +546,7 @@ describe("message", () => {
             .ref("rooms")
             .set({
                 room_id_1: {
-                    title: "before_postable_title",
+                    title: "title",
                     public_start_unixtime: moment(now_unixtime)
                         .subtract(2, "minutes")
                         .valueOf(),
@@ -574,11 +574,32 @@ describe("message", () => {
 });
 
 describe("reaction", () => {
+    it("cannot be created by user in not postable", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                not_postable: {
+                    title: "title",
+                },
+            });
+        adminApp().ref("messages/not_postable/message_1").set({
+            user_id: "alice",
+            text: "message_1_text",
+            nickname: "alice_nickname",
+            timestamp: now_unixtime,
+        });
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertFails(
+            alice.ref("reactions/not_postable/message_id_1/reaction_id_1").set({
+                user_ids: ["alice"],
+            })
+        );
+    });
+
     it("cannot be created by user who not match auth.id", async () => {});
 
     it("cannot be deleted by user who not match auth.id", async () => {});
-
-    it("cannot be created by user in not postable", async () => {});
 
     it("can be created by user", async () => {});
 
