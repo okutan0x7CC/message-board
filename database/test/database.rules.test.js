@@ -579,25 +579,58 @@ describe("reaction", () => {
         await adminApp()
             .ref("rooms")
             .set({
-                not_postable: {
+                room_id_1: {
                     title: "title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
                 },
             });
-        adminApp().ref("messages/not_postable/message_1").set({
-            user_id: "alice",
+        adminApp().ref("messages/room_id_1/message_1").set({
+            user_id: "bob",
             text: "message_1_text",
-            nickname: "alice_nickname",
+            nickname: "bob_nickname",
             timestamp: now_unixtime,
         });
         const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
         await firebase.assertFails(
-            alice.ref("reactions/not_postable/message_id_1/reaction_id_1").set({
+            alice.ref("reactions/room_id_1/message_id_1/reaction_id_1").set({
                 user_ids: ["alice"],
             })
         );
     });
 
-    it("cannot be created by user who not match auth.id", async () => {});
+    it("cannot be created by user who not match auth.id", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        adminApp().ref("messages/room_id_1/message_1").set({
+            user_id: "bob",
+            text: "message_1_text",
+            nickname: "bob_nickname",
+            timestamp: now_unixtime,
+        });
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertFails(
+            alice.ref("reactions/room_id_1/message_id_1/reaction_id_1").set({
+                user_ids: ["not_alice"],
+            })
+        );
+    });
 
     it("cannot be deleted by user who not match auth.id", async () => {});
 
