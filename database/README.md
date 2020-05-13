@@ -10,7 +10,7 @@
 
 ### デプロイ
 セキュリティルールは `database.rules.json` に実装されており、
-コマンド `./../deploy.sh` を実行するか、Firebase コンソールによって Firebase プロジェクトにデプロイすることができる。  
+コマンド `cd .. && ./deploy.sh` を実行するか、Firebase コンソールによって Firebase プロジェクトにデプロイすることができる。  
 なお、 `database.rules.json` には管理者判定の処理が含まれているため `.gitignore` に追加されている。
 
 **したがって、セキュリティルール (`database.rules.json`) は .gitignore　に追加されているため、実装/デプロイ を行う前に必ず Firebase コンソールから最新版を取得すること。**
