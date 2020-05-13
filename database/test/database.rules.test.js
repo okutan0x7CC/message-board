@@ -597,8 +597,8 @@ describe("reaction", () => {
         });
         const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
         await firebase.assertFails(
-            alice.ref("reactions/room_id_1/message_id_1/reaction_id_1").set({
-                user_ids: ["alice"],
+            alice.ref("reactions/room_id_1/message_id_1").set({
+                alice: true,
             })
         );
     });
@@ -618,18 +618,18 @@ describe("reaction", () => {
                         .valueOf(),
                 },
             });
-        adminApp().ref("messages/room_id_1/message_1").set({
+        adminApp().ref("messages/room_id_1/message_id_1").set({
             user_id: "bob",
             text: "message_1_text",
             nickname: "bob_nickname",
             timestamp: now_unixtime,
         });
-        adminApp().ref("reactions/room_id_1/message_1/reaction_id_1").set({
+        adminApp().ref("reactions/room_id_1/message_id_1").set({
             carol: true,
         });
         const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
         await firebase.assertFails(
-            alice.ref("reactions/room_id_1/message_id_1/reaction_id_1").set({
+            alice.ref("reactions/room_id_1/message_id_1").set({
                 not_alice: true,
             })
         );
@@ -650,24 +650,172 @@ describe("reaction", () => {
                         .valueOf(),
                 },
             });
-        adminApp().ref("messages/room_id_1/message_1").set({
+        adminApp().ref("messages/room_id_1/message_id_1").set({
             user_id: "bob",
             text: "message_1_text",
             nickname: "bob_nickname",
             timestamp: now_unixtime,
         });
-        adminApp().ref("reactions/room_id_1/message_1/reaction_id_1").set({
+        adminApp().ref("reactions/room_id_1/message_id_1").set({
             carol: true,
         });
         const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
         await firebase.assertFails(
-            alice
-                .ref("reactions/room_id_1/message_id_1/reaction_id_1/carol")
-                .remove()
+            alice.ref("reactions/room_id_1/message_id_1/carol").set(null)
+        );
+        await firebase.assertFails(
+            alice.ref("reactions/room_id_1/message_id_1/carol").remove()
         );
     });
 
-    it("can be created by user", async () => {});
+    it("cannot be created by user when message does not exist", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        adminApp()
+            .ref("messages/room_id_1")
+            .set({
+                message_id_1: {
+                    user_id: "bob",
+                    text: "message_1_text",
+                    nickname: "bob_nickname",
+                    timestamp: now_unixtime,
+                },
+            });
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertFails(
+            alice.ref("reactions/room_id_1/not_exist/alice").set(true)
+        );
+    });
 
-    it("can be deleted by user", async () => {});
+    it("cannot be created by user when set value is not true", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        adminApp()
+            .ref("messages/room_id_1")
+            .set({
+                message_id_1: {
+                    user_id: "bob",
+                    text: "message_1_text",
+                    nickname: "bob_nickname",
+                    timestamp: now_unixtime,
+                },
+                message_id_2: {
+                    user_id: "bob",
+                    text: "message_2_text",
+                    nickname: "bob_nickname",
+                    timestamp: now_unixtime,
+                },
+            });
+        adminApp().ref("reactions/room_id_1/message_id_1/carol").set(true);
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertFails(
+            alice.ref("reactions/room_id_1/message_id_1/alice").set(false)
+        );
+        await firebase.assertFails(
+            alice.ref("reactions/room_id_1/message_id_2/alice").set(false)
+        );
+    });
+
+    it("can be created by user", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        adminApp()
+            .ref("messages/room_id_1")
+            .set({
+                message_id_1: {
+                    user_id: "bob",
+                    text: "message_1_text",
+                    nickname: "bob_nickname",
+                    timestamp: now_unixtime,
+                },
+                message_id_2: {
+                    user_id: "bob",
+                    text: "message_2_text",
+                    nickname: "bob_nickname",
+                    timestamp: now_unixtime,
+                },
+            });
+        adminApp().ref("reactions/room_id_1/message_id_1/carol").set(true);
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertSucceeds(
+            alice.ref("reactions/room_id_1/message_id_1/alice").set(true)
+        );
+        await firebase.assertSucceeds(
+            alice.ref("reactions/room_id_1/message_id_2/alice").set(true)
+        );
+    });
+
+    it("can be deleted by user", async () => {
+        const now_unixtime = firebase.firestore.Timestamp.now().toMillis();
+        await adminApp()
+            .ref("rooms")
+            .set({
+                room_id_1: {
+                    title: "title",
+                    post_start_unixtime: moment(now_unixtime)
+                        .subtract(2, "minutes")
+                        .valueOf(),
+                    post_end_unixtime: moment(now_unixtime)
+                        .add(2, "minutes")
+                        .valueOf(),
+                },
+            });
+        adminApp()
+            .ref("messages/room_id_1")
+            .set({
+                message_id_1: {
+                    user_id: "bob",
+                    text: "message_1_text",
+                    nickname: "bob_nickname",
+                    timestamp: now_unixtime,
+                },
+            });
+        adminApp().ref("reactions/room_id_1/message_id_1").set({
+            carol: true,
+            alice: true,
+        });
+        const alice = authedApp({ uid: "alice", nickname: "alice_nickname" });
+        await firebase.assertSucceeds(
+            alice.ref("reactions/room_id_1/message_id_1/alice").set(null)
+        );
+        await firebase.assertSucceeds(
+            alice.ref("reactions/room_id_1/message_id_1/alice").remove()
+        );
+    });
 });
