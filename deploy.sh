@@ -1,73 +1,37 @@
 #!/bin/bash
 
-PS3="Enter a number: "
-
-# select deployment destination
-DESTINATION=""
-printf "\nPlease select a deployment destination.\n"
-select destination in staging production; do
-    case $destination in
-        staging)  ;;
-        production) ;;
-        *) continue ;;
-    esac
-    DESTINATION=$destination
-    printf "\n ⊙ Selected destination: $DESTINATION\n"
-    break
-done
-
-# select deployment target
-TARGET=""
-printf "\nPlease select a deployment target.\n"
-select target in admin_and_function client projection database; do
-    case $target in
-        admin_and_function) ;;
-        client) ;;
-        projection) ;;
-        database) ;;
-        *) continue ;;
-    esac
-    TARGET=$target
-    printf "\n ⊙ Selected target: $TARGET\n"
-    break
-done
-
-# final confirmation
-printf "\nFinal confirmation\n ⊙ Destination: $DESTINATION\n ⊙ Target: $TARGET\nDo you really want to deploy it?\n"
-select yn in Yes No; do
-    case $yn in
-        Yes) 
-            printf "\n ⊙ Selected answer: $yn\n"
-            break
-            ;;
-        No) 
-            printf "\n ⊙ Selected answer: $yn\n"
-            exit
-            ;;
-        *) continue ;;
-    esac
-done
-
-python generate_env.py
 
 printf "\n== Start deployment! ==\n"
 
+if [ $# != 2 ]; then
+    printf "ERROR: deploy.sh needs two arguments.\n./deploy.sh {PROJECT} {TARGET}\n";
+    exit;
+fi
+
+PROJECT=$0
+TARGET=$1
+printf "\n- PROJECT: $PROJECT\n- TARGET:  $TARGET\nDo you really want to deploy it? [y/n]: "
+read yn
+if [ $yn != "y" ]; then
+    exit
+fi
+
 case $TARGET in
-    admin_and_function)
-        rm -rf ./admin/dist && rm -rf ./functions/admin/*
-        cd admin && npm run build && cd ..
-        mv ./admin/dist/index.html ./functions/admin/index.html
-        firebase deploy --project=$DESTINATION --only hosting:admin,functions:adminIndexHtml
+    admin)
+        rm -rf ./admin/dist
+        cd admin && npm run build:$PROJECT && cd ..
+        mv ./admin/dist/index.html ./functions/admin/$PROJECT/index.html
+        firebase deploy --project=$PROJECT --only hosting:admin,functions:adminIndexHtml
         ;;
     client)
         rm -rf ./client/dist
-        cd client && npm run build && cd ..
-        firebase deploy --project=$DESTINATION --only hosting:client
-        ;;
-    projection)
-        rm -rf ./projection/dist
-        cd projection && npm run build && cd ..
-        firebase deploy --project=$DESTINATION --only hosting:projection
+        cd client && npm run build:$PROJECT && cd ..
+        if [ $PROJECT == staging ]; then
+            mv ./client/dist/index.html ./functions/client/$PROJECT/index.html
+            firebase deploy --project=$DESTINATION --only hosting:$PROJECT-client,functions:stagingIndexHtml
+        else
+            firebase deploy --project=$DESTINATION --only hosting:$PROJECT-client
+        fi
         ;;
     database)
         firebase deploy --project=$DESTINATION --only database
