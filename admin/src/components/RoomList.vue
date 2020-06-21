@@ -3,7 +3,7 @@
     <table>
       <th></th>
       <tr v-for="room in rooms" :key="room.id">
-        <room-item />
+        <room-item :room="room" />
       </tr>
     </table>
   </div>

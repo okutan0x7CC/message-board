@@ -9,7 +9,7 @@
         "admin": [
           "stg-admin-message-board"
         ],
-        "client": [
+        "staging-client": [
           "stg-message-board"
         ],
         "projection": [
@@ -22,7 +22,7 @@
         "admin": [
           "admin-message-board-d24c1"
         ],
-        "client": [
+        "production-client": [
           "message-board-d24c1"
         ],
         "projection": [

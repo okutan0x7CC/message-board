@@ -1,20 +1,20 @@
 #!/bin/bash
 
 
-printf "\n== Start deployment! ==\n"
-
 if [ $# != 2 ]; then
     printf "ERROR: deploy.sh needs two arguments.\n./deploy.sh {PROJECT} {TARGET}\n";
     exit;
 fi
 
-PROJECT=$0
-TARGET=$1
+PROJECT=$1
+TARGET=$2
 printf "\n- PROJECT: $PROJECT\n- TARGET:  $TARGET\nDo you really want to deploy it? [y/n]: "
 read yn
-if [ $yn != "y" ]; then
+if [ $yn != y ]; then
     exit
 fi
+
+printf "\n== Start deployment! ==\n"
 
 case $TARGET in
     admin)
@@ -28,7 +28,7 @@ case $TARGET in
         cd client && npm run build:$PROJECT && cd ..
         if [ $PROJECT == staging ]; then
             mv ./client/dist/index.html ./functions/client/$PROJECT/index.html
-            firebase deploy --project=$PROJECT --only hosting:$PROJECT-client,functions:stagingIndexHtml
+            firebase deploy --project=$PROJECT --only hosting:$PROJECT-client,functions:stgClientIndexHtml
         else
             firebase deploy --project=$PROJECT --only hosting:$PROJECT-client
         fi

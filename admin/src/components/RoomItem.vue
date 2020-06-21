@@ -1,12 +1,15 @@
 <template>
   <div id="room-item">
-    hoge
+    {{ room }}
   </div>
 </template>
 
 <script>
 export default {
   name: "RoomItem",
+  props: {
+    room: Object,
+  },
 };
 </script>
 

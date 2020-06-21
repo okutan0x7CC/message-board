@@ -57,7 +57,7 @@ export default {
   created: function() {
     const self = this;
     auth.onAuthStateChanged((user) => {
-      const is_logged_in = user !== undefined;
+      const is_logged_in = user !== null;
       if (!is_logged_in) {
         self.googleLogin();
         return;
