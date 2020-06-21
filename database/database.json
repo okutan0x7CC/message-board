@@ -1,51 +1,36 @@
 {
-    "rooms": {
-        "room_id_1": {
-            "title": "room_id_1_title",
-            "public_start_unixtime": 1588932300,
-            "public_end_unixtime": 1588932300,
-            "post_start_unixtime": 1588932300,
-            "post_end_unixtime": 1588932300
-        },
-        "room_id_2": {
-            "title": "room_id_2_title",
-            "public_start_unixtime": 1588932300,
-            "public_end_unixtime": 1588932300,
-            "post_start_unixtime": 1588932300,
-            "post_end_unixtime": 1588932300
-        }
+  "rooms": {
+    "room_id_1": {
+      "title": "room_id_1_title",
+      "can_read": false,
+      "can_write": false
     },
-    "messages": {
-        "room_id_1": {
-            "message_id_1": {
-                "user_id": "user_id_1",
-                "nickname": "user_id_1_nickname",
-                "text": "message_id_1_text",
-                "timestamp": 1588932300
-            },
-            "message_id_2": {
-                "user_id": "user_id_2",
-                "nickname": "user_id_2_nickname",
-                "text": "message_id_2_text",
-                "timestamp": 1588932301
-            },
-            "message_id_3": {
-                "user_id": "user_id_1",
-                "nickname": "user_id_1_nickname",
-                "text": "message_id_3_text",
-                "timestamp": 1588932302
-            }
-        }
-    },
-    "reactions": {
-        "room_id_1": {
-            "message_id_1": {
-                "user_id_2": true
-            },
-            "message_id_3": {
-                "user_id_1": true,
-                "user_id_2": true
-            }
-        }
+    "room_id_2": {
+      "title": "room_id_2_title",
+      "can_read": true,
+      "can_write": true
     }
+  },
+  "messages": {
+    "room_id_1": {
+      "message_id_1": {
+        "user_id": "user_id_1",
+        "nickname": "user_id_1_nickname",
+        "text": "message_id_1_text",
+        "timestamp": 1588932300
+      },
+      "message_id_2": {
+        "user_id": "user_id_2",
+        "nickname": "user_id_2_nickname",
+        "text": "message_id_2_text",
+        "timestamp": 1588932301
+      },
+      "message_id_3": {
+        "user_id": "user_id_1",
+        "nickname": "user_id_1_nickname",
+        "text": "message_id_3_text",
+        "timestamp": 1588932302
+      }
+    }
+  }
 }
