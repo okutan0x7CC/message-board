@@ -23,9 +23,6 @@ export default {
       rooms: {},
     };
   },
-  firebase: {
-    rooms: db.ref("rooms"),
-  },
 };
 </script>
 
