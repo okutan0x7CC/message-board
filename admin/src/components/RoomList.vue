@@ -1,10 +1,18 @@
 <template>
   <div id="room-list">
     <table>
-      <th></th>
-      <tr v-for="room in rooms" :key="room.id">
-        <room-item :room="room" />
-      </tr>
+      <thead>
+        <tr>
+          <th>private title</th>
+          <th>can read</th>
+          <th>can write</th>
+        </tr>
+      </thead>
+      <tbody>
+        <div v-for="room in rooms" :key="room.id">
+          <room-item :room="room" />
+        </div>
+      </tbody>
     </table>
   </div>
 </template>
@@ -22,6 +30,14 @@ export default {
     return {
       rooms: {},
     };
+  },
+  created: function() {
+    const self = this;
+    db.ref("rooms")
+      .once("value")
+      .then((snapshot) => {
+        self.rooms = snapshot.val();
+      });
   },
 };
 </script>
