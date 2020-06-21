@@ -1,15 +1,13 @@
 <template>
   <div id="room-item">
-      hoge
+    hoge
   </div>
 </template>
 
 <script>
 export default {
-    name: "RoomItem"
-}
+  name: "RoomItem",
+};
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

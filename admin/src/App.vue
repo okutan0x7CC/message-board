@@ -6,70 +6,106 @@
     <div v-else-if="is_authentication_failure">
       認証失敗
     </div>
+    <div v-else-if="!login_user.can_read">
+      権限がありません
+    </div>
     <div v-else>
-      <div id="nav">
-      </div>
-      <router-view/>
+      <the-topbar :login_user="login_user" />
+      <router-view />
     </div>
   </div>
 </template>
 
 <script>
 import firebase from "firebase/app";
-import "firebase/analytics";
 import "firebase/auth";
+import "firebase/database";
 const firebaseConfig = {
-  apiKey: process.env.API_KEY,
-  authDomain: process.env.AUTH_DOMAIN,
-  databaseURL: process.env.DATABASE_URL,
-  projectId: process.env.PROJECT_ID,
-  storageBucket: process.env.STORAGE_BUCKET,
-  messagingSenderId: process.env.MESSAGING_SENDER_ID,
-  appId: process.env.APP_ID,
-  measurementId: process.env.MEASUREMENT_ID
+  apiKey: process.env.VUE_APP_API_KEY,
+  authDomain: process.env.VUE_APP_AUTH_DOMAIN,
+  databaseURL: process.env.VUE_APP_DATABASE_URL,
+  projectId: process.env.VUE_APP_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_APP_ID,
+  measurementId: process.env.VUE_APP_MEASUREMENT_ID,
 };
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+
+export const db = firebase.database();
+export const auth = firebase.auth();
+
+import TheTopbar from "./components/TheTopbar.vue";
 
 export default {
   name: "App",
+  components: {
+    TheTopbar,
+  },
   data: function() {
     return {
       is_authenticating: true,
       is_authentication_failure: true,
-    }
+      login_user: {
+        photo_url: null,
+        email: null,
+        can_read: false,
+        can_write: false,
+      },
+    };
   },
   created: function() {
-    let self = this;
-    firebase.auth().onAuthStateChanged(function(user) {
-        self.is_authenticating = false
-      if (user) {
-        self.is_authentication_failure = false
-        console.log("login")
-      } else {
-        self.is_authentication_failure = true
-        self.googleLogin()
+    const self = this;
+    auth.onAuthStateChanged((user) => {
+      const is_logged_in = user !== undefined;
+      if (!is_logged_in) {
+        self.googleLogin();
+        return;
       }
+      self.verifyReadPermission(user);
+      self.verifyWritePermission(user);
     });
   },
   methods: {
     googleLogin: function() {
       let provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope("email");
       let self = this;
-      firebase.auth().signInWithRedirect(provider).then(function(result) {
-        self.is_authentication_failure = false
-        var token = result.credential.accessToken;
-        var user = result.user;
-        console.log(token)
-        console.log(user)
-      }).catch(function(error) {
-        self.is_authentication_failure = true
-        console.log(error)
+      auth.signInWithRedirect(provider).catch((error) => {
+        self.is_authentication_failure = true;
+        console.log(error);
       });
-    }
-  }
-}
-
-
+    },
+    verifyReadPermission: function(firebase_user) {
+      const self = this;
+      db.ref(
+        `admin_user_emails/${firebase_user.email.replace(".", "%2E")}/can_read`
+      )
+        .once("value")
+        .then((snapshot) => {
+          self.is_authenticating = false;
+          self.is_authentication_failure = false;
+          self.login_user.email = firebase_user.email;
+          self.login_user.photo_url = firebase_user.photoURL;
+          self.login_user.can_read = snapshot.val();
+        })
+        .catch(() => {
+          self.is_authentication_failure = true;
+          auth.signOut().finally(() => {
+            self.googleLogin();
+          });
+        });
+    },
+    verifyWritePermission: function(firebase_user) {
+      const self = this;
+      db.ref(
+        `admin_user_emails/${firebase_user.email.replace(".", "%2E")}/can_write`
+      )
+        .once("value")
+        .then((snapshot) => {
+          self.login_user.can_write = snapshot.val();
+        });
+    },
+  },
+};
 </script>
-
