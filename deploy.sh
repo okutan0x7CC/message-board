@@ -28,13 +28,13 @@ case $TARGET in
         cd client && npm run build:$PROJECT && cd ..
         if [ $PROJECT == staging ]; then
             mv ./client/dist/index.html ./functions/client/$PROJECT/index.html
-            firebase deploy --project=$DESTINATION --only hosting:$PROJECT-client,functions:stagingIndexHtml
+            firebase deploy --project=$PROJECT --only hosting:$PROJECT-client,functions:stagingIndexHtml
         else
-            firebase deploy --project=$DESTINATION --only hosting:$PROJECT-client
+            firebase deploy --project=$PROJECT --only hosting:$PROJECT-client
         fi
         ;;
     database)
-        firebase deploy --project=$DESTINATION --only database
+        firebase deploy --project=$PROJECT --only database
         ;;
 esac
 
