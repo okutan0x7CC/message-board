@@ -11,9 +11,6 @@
         ],
         "staging-client": [
           "stg-message-board"
-        ],
-        "projection": [
-          "stg-projection-message-board"
         ]
       }
     },
@@ -24,9 +21,6 @@
         ],
         "production-client": [
           "message-board-d24c1"
-        ],
-        "projection": [
-          "projection-message-board-d24c1"
         ]
       }
     }
