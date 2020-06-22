@@ -59,10 +59,15 @@ export default {
       const promise_messages = db.ref(`messages/${room_id}`).remove();
 
       const self = this;
-      Promise.all([promise_room, promise_messages]).then(() => {
-        self.room_ids.splice(index, 1);
-        self.rooms.splice(index, 1);
-      });
+      Promise.all([promise_room, promise_messages])
+        .then(() => {
+          self.room_ids.splice(index, 1);
+          self.rooms.splice(index, 1);
+        })
+        .catch(() => {
+          // todo: alert
+          return;
+        });
     }
   }
 };

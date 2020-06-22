@@ -49,6 +49,12 @@ export default {
   created: function() {
     const self = this;
     db.ref(`messages/${this.roomId}`).on("child_added", snapshot => {
+      // firebase で remove()/set(null) に permission_denied した場合、
+      // その対象で child_added が呼ばれる現象の対策
+      if (self.message_ids.includes(snapshot.key)) {
+        return;
+      }
+
       self.message_ids.unshift(snapshot.key);
       self.messages.unshift(snapshot.val());
     });
@@ -59,10 +65,15 @@ export default {
         .ref(`messages/${this.roomId}/${message_id}`)
         .remove();
       const self = this;
-      Promise.all([promise_message]).then(() => {
-        self.message_ids.splice(index, 1);
-        self.messages.splice(index, 1);
-      });
+      Promise.all([promise_message])
+        .then(() => {
+          self.message_ids.splice(index, 1);
+          self.messages.splice(index, 1);
+        })
+        .catch(() => {
+          // todo: alert
+          return;
+        });
     }
   },
   filters: {

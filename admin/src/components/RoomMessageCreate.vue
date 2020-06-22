@@ -33,17 +33,20 @@ export default {
   methods: {
     create: function() {
       const self = this;
-      db.ref(`messages/${this.roomId}`).push(
-        {
+      db.ref(`messages/${this.roomId}`)
+        .push({
           user_id: "admin",
           text: this.text,
           nickname: this.nickname,
           timestamp: firebase.database.ServerValue.TIMESTAMP
-        },
-        () => {
+        })
+        .then(() => {
           self.$router.back();
-        }
-      );
+        })
+        .catch(() => {
+          // todo: alert
+          return;
+        });
     }
   }
 };
