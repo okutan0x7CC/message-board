@@ -42,4 +42,20 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+table {
+  tbody {
+    display: block;
+    overflow: auto;
+  }
+  thead,
+  tbody tr {
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+  }
+  td {
+    word-break: break-all;
+  }
+}
+</style>
