@@ -11,6 +11,11 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
+    component: RoomList,
+    alias: "/rooms",
+  },
+  {
+    path: "/rooms",
     name: "RoomList",
     component: RoomList,
   },
