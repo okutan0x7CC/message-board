@@ -9,11 +9,19 @@
           <th>timestamp</th>
           <th>text</th>
           <th>nickname</th>
+          <th>delete message</th>
         </tr>
       </thead>
       <tbody>
         <div v-for="(message_id, index) in message_ids" :key="message_id">
-          <RoomMessageItem :message_id="message_id" :message="messages[index]" />
+          <tr>
+            <td>{{ messages[index].timestamp | formatDatetime }}</td>
+            <td>{{ messages[index].text }}</td>
+            <td>{{ messages[index].nickname }}</td>
+            <td>
+              <button v-on:click="deleteMessage(message_id, index)">delete</button>
+            </td>
+          </tr>
         </div>
       </tbody>
     </table>
@@ -21,14 +29,12 @@
 </template>
 
 <script>
-import RoomMessageItem from "./RoomMessageItem.vue";
+import moment from "moment-timezone";
 import { db } from "./../main.js";
 
 export default {
   name: "RoomMessageList",
-  components: {
-    RoomMessageItem
-  },
+  components: {},
   data: function() {
     return {
       message_ids: [],
@@ -46,6 +52,25 @@ export default {
       self.message_ids.unshift(snapshot.key);
       self.messages.unshift(snapshot.val());
     });
+  },
+  methods: {
+    deleteMessage: function(message_id, index) {
+      const promise_message = db
+        .ref(`messages/${this.roomId}/${message_id}`)
+        .remove();
+      const self = this;
+      Promise.all([promise_message]).then(() => {
+        self.message_ids.splice(index, 1);
+        self.messages.splice(index, 1);
+      });
+    }
+  },
+  filters: {
+    formatDatetime: function(timestamp) {
+      return moment(timestamp)
+        .tz("Asia/Tokyo")
+        .format("YYYY-MM-DD HH:mm:ss");
+    }
   }
 };
 </script>

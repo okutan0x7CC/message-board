@@ -9,11 +9,21 @@
           <th>private title</th>
           <th>can read</th>
           <th>can write</th>
+          <th>delete room</th>
         </tr>
       </thead>
       <tbody>
         <div v-for="(room_id, index) in room_ids" :key="room_id">
-          <room-item :room_id="room_id" :room="rooms[index]" />
+          <tr>
+            <td>
+              <router-link :to="{ path: `/rooms/${room_id}` }">{{ rooms[index].private_title }}</router-link>
+            </td>
+            <td>{{ rooms[index].can_read }}</td>
+            <td>{{ rooms[index].can_write }}</td>
+            <td>
+              <button v-on:click="deleteRoom(room_id, index)">delete</button>
+            </td>
+          </tr>
         </div>
       </tbody>
     </table>
@@ -21,14 +31,11 @@
 </template>
 
 <script>
-import RoomItem from "./RoomItem.vue";
 import { db } from "./../main.js";
 
 export default {
   name: "RoomList",
-  components: {
-    RoomItem
-  },
+  components: {},
   data() {
     return {
       room_ids: [],
@@ -45,6 +52,18 @@ export default {
           self.rooms.unshift(child.val());
         });
       });
+  },
+  methods: {
+    deleteRoom: function(room_id, index) {
+      const promise_room = db.ref(`rooms/${room_id}`).remove();
+      const promise_messages = db.ref(`messages/${room_id}`).remove();
+
+      const self = this;
+      Promise.all([promise_room, promise_messages]).then(() => {
+        self.room_ids.splice(index, 1);
+        self.rooms.splice(index, 1);
+      });
+    }
   }
 };
 </script>
