@@ -12,8 +12,8 @@
         </tr>
       </thead>
       <tbody>
-        <div v-for="(room, room_id) in rooms" :key="room_id">
-          <room-item :room_id="room_id" :room="room" />
+        <div v-for="(room_id, index) in room_ids" :key="room_id">
+          <room-item :room_id="room_id" :room="rooms[index]" />
         </div>
       </tbody>
     </table>
@@ -31,7 +31,8 @@ export default {
   },
   data() {
     return {
-      rooms: {},
+      room_ids: [],
+      rooms: [],
     };
   },
   created: function() {
@@ -39,7 +40,10 @@ export default {
     db.ref("rooms")
       .once("value")
       .then((snapshot) => {
-        self.rooms = snapshot.val();
+        snapshot.forEach((child) => {
+          self.room_ids.unshift(child.key);
+          self.rooms.unshift(child.val());
+        });
       });
   },
 };
