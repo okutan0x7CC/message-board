@@ -1,19 +1,19 @@
 <template>
   <div>
     <div>
-      <label for="public-title">public title: </label>
+      <label for="public-title">public title:</label>
       <input v-model="public_title" type="text" id="public-title" />
     </div>
     <div>
-      <label for="private-title">private title: </label>
+      <label for="private-title">private title:</label>
       <input v-model="private_title" type="text" id="private-title" />
     </div>
     <div>
-      <label for="can-read">can read: </label>
+      <label for="can-read">can read:</label>
       <input v-model="can_read" type="checkbox" id="can-read" />
     </div>
     <div>
-      <label for="can-write">can write: </label>
+      <label for="can-write">can write:</label>
       <input v-model="can_write" type="checkbox" id="can-write" />
     </div>
     <div>
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { db } from "./../App.vue";
+import { db } from "./../main.js";
 
 export default {
   name: "RoomCreate",
@@ -32,7 +32,7 @@ export default {
       public_title: "",
       private_title: "",
       can_read: false,
-      can_write: false,
+      can_write: false
     };
   },
   methods: {
@@ -43,14 +43,14 @@ export default {
           public_title: this.public_title,
           private_title: this.private_title,
           can_read: this.can_read,
-          can_write: this.can_write,
+          can_write: this.can_write
         },
         () => {
           self.$router.back();
         }
       );
-    },
-  },
+    }
+  }
 };
 </script>
 

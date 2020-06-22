@@ -1,30 +1,19 @@
 <template>
   <div id="room-message-list">
     <div>
-      <router-link :to="{ path: `/rooms/${roomId}/messages/create` }">
-        create message
-      </router-link>
+      <router-link :to="{ path: `/rooms/${roomId}/messages/create` }">create message</router-link>
     </div>
     <table>
       <thead>
         <tr>
-          <th>
-            timestamp
-          </th>
-          <th>
-            text
-          </th>
-          <th>
-            nickname
-          </th>
+          <th>timestamp</th>
+          <th>text</th>
+          <th>nickname</th>
         </tr>
       </thead>
       <tbody>
         <div v-for="(message_id, index) in message_ids" :key="message_id">
-          <RoomMessageItem
-            :message_id="message_id"
-            :message="messages[index]"
-          />
+          <RoomMessageItem :message_id="message_id" :message="messages[index]" />
         </div>
       </tbody>
     </table>
@@ -33,31 +22,31 @@
 
 <script>
 import RoomMessageItem from "./RoomMessageItem.vue";
-import { db } from "./../App.vue";
+import { db } from "./../main.js";
 
 export default {
   name: "RoomMessageList",
   components: {
-    RoomMessageItem,
+    RoomMessageItem
   },
   data: function() {
     return {
       message_ids: [],
-      messages: [],
+      messages: []
     };
   },
   computed: {
     roomId: function() {
       return this.$route.params.room_id;
-    },
+    }
   },
   created: function() {
     const self = this;
-    db.ref(`messages/${this.roomId}`).on("child_added", (snapshot) => {
+    db.ref(`messages/${this.roomId}`).on("child_added", snapshot => {
       self.message_ids.unshift(snapshot.key);
       self.messages.unshift(snapshot.val());
     });
-  },
+  }
 };
 </script>
 

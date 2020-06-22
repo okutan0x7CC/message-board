@@ -1,11 +1,11 @@
 <template>
   <div>
     <div>
-      <label for="message-nickname">nickname: </label>
+      <label for="message-nickname">nickname:</label>
       <input v-model="nickname" id="message-nickname" type="text" />
     </div>
     <div>
-      <label for="message-text">text: </label>
+      <label for="message-text">text:</label>
       <input v-model="text" id="message-text" type="text" />
     </div>
     <div>
@@ -15,21 +15,20 @@
 </template>
 
 <script>
-import firebase from "firebase/app";
-import { db } from "./../App.vue";
+import { firebase, db } from "./../main.js";
 
 export default {
   name: "RoomMessageCreate",
   data: function() {
     return {
       text: "",
-      nickname: "",
+      nickname: ""
     };
   },
   computed: {
     roomId: function() {
       return this.$route.params.room_id;
-    },
+    }
   },
   methods: {
     create: function() {
@@ -39,14 +38,14 @@ export default {
           user_id: "admin",
           text: this.text,
           nickname: this.nickname,
-          timestamp: firebase.database.ServerValue.TIMESTAMP,
+          timestamp: firebase.database.ServerValue.TIMESTAMP
         },
         () => {
           self.$router.back();
         }
       );
-    },
-  },
+    }
+  }
 };
 </script>
 

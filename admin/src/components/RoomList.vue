@@ -22,30 +22,30 @@
 
 <script>
 import RoomItem from "./RoomItem.vue";
-import { db } from "./../App.vue";
+import { db } from "./../main.js";
 
 export default {
   name: "RoomList",
   components: {
-    RoomItem,
+    RoomItem
   },
   data() {
     return {
       room_ids: [],
-      rooms: [],
+      rooms: []
     };
   },
   created: function() {
     const self = this;
     db.ref("rooms")
       .once("value")
-      .then((snapshot) => {
-        snapshot.forEach((child) => {
+      .then(snapshot => {
+        snapshot.forEach(child => {
           self.room_ids.unshift(child.key);
           self.rooms.unshift(child.val());
         });
       });
-  },
+  }
 };
 </script>
 
