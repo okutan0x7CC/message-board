@@ -40,10 +40,10 @@ export default {
       const self = this;
       db.ref("rooms").push(
         {
-          public_title: self.public_title,
-          private_title: self.private_title,
-          can_read: self.can_read,
-          can_write: self.can_write,
+          public_title: this.public_title,
+          private_title: this.private_title,
+          can_read: this.can_read,
+          can_write: this.can_write,
         },
         () => {
           self.$router.back();

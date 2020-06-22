@@ -1,5 +1,5 @@
 <template>
-  <tr id="room-item">
+  <tr>
     <td>
       <router-link :to="{ path: `/rooms/${room_id}` }">
         {{ room.private_title }}
