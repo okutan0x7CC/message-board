@@ -1,5 +1,8 @@
 <template>
   <div id="room-list">
+    <div>
+      <router-link to="/rooms/create">create room</router-link>
+    </div>
     <table>
       <thead>
         <tr>
