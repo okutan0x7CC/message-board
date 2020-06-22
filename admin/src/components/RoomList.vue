@@ -12,8 +12,8 @@
         </tr>
       </thead>
       <tbody>
-        <div v-for="room in rooms" :key="room.id">
-          <room-item :room="room" />
+        <div v-for="(room, room_id) in rooms" :key="room_id">
+          <room-item :room_id="room_id" :room="room" />
         </div>
       </tbody>
     </table>

@@ -1,6 +1,10 @@
 <template>
   <tr id="room-item">
-    <td>{{ room.private_title }}</td>
+    <td>
+      <router-link :to="{ path: `/rooms/${room_id}` }">
+        {{ room.private_title }}
+      </router-link>
+    </td>
     <td>{{ room.can_read }}</td>
     <td>{{ room.can_write }}</td>
   </tr>
@@ -10,6 +14,7 @@
 export default {
   name: "RoomItem",
   props: {
+    room_id: String,
     room: Object,
   },
 };
