@@ -44,7 +44,7 @@ export default {
           self.$router.back();
         })
         .catch(() => {
-          // todo: alert
+          // TODO: alert
           return;
         });
     }

@@ -76,19 +76,19 @@ export default {
         db.ref(`hidden_messages/${this.roomId}/${this.message_ids[index]}`)
           .set(true)
           .then(() => {
-            // todo: alert
+            // TODO: alert
           })
           .catch(() => {
-            // todo: alert
+            // TODO: alert
           });
       } else {
         db.ref(`hidden_messages/${this.roomId}/${this.message_ids[index]}`)
           .remove()
           .then(() => {
-            // todo: alert
+            // TODO: alert
           })
           .catch(() => {
-            // todo: alert
+            // TODO: alert
           });
       }
     }

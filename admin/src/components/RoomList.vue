@@ -73,7 +73,7 @@ export default {
           self.rooms.splice(index, 1);
         })
         .catch(() => {
-          // todo: alert
+          // TODO: alert
           return;
         });
     },
