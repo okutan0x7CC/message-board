@@ -18,10 +18,16 @@
             <td>
               <router-link :to="{ path: `/rooms/${room_id}` }">{{ rooms[index].private_title }}</router-link>
             </td>
-            <td>{{ rooms[index].can_read }}</td>
-            <td>{{ rooms[index].can_write }}</td>
             <td>
-              <button v-on:click="deleteRoom(room_id, index)">delete</button>
+              {{ rooms[index].can_read }}
+              <button v-on:click="toggleCanRead(index)">toggle</button>
+            </td>
+            <td>
+              {{ rooms[index].can_write }}
+              <button v-on:click="toggleCanWrite(index)">toggle</button>
+            </td>
+            <td>
+              <button v-on:click="deleteRoom(index)">delete</button>
             </td>
           </tr>
         </div>
@@ -54,9 +60,11 @@ export default {
       });
   },
   methods: {
-    deleteRoom: function(room_id, index) {
-      const promise_room = db.ref(`rooms/${room_id}`).remove();
-      const promise_messages = db.ref(`messages/${room_id}`).remove();
+    deleteRoom: function(index) {
+      const promise_room = db.ref(`rooms/${this.room_ids[index]}`).remove();
+      const promise_messages = db
+        .ref(`messages/${this.room_ids[index]}`)
+        .remove();
 
       const self = this;
       Promise.all([promise_room, promise_messages])
@@ -67,6 +75,30 @@ export default {
         .catch(() => {
           // todo: alert
           return;
+        });
+    },
+    toggleCanRead: function(index) {
+      const next_status = !this.rooms[index].can_read;
+      const self = this;
+      db.ref(`rooms/${this.room_ids[index]}/can_read`)
+        .set(next_status)
+        .then(() => {
+          self.rooms[index].can_read = next_status;
+        })
+        .catch(() => {
+          // TODO: alert
+        });
+    },
+    toggleCanWrite: function(index) {
+      const next_status = !this.rooms[index].can_write;
+      const self = this;
+      db.ref(`rooms/${this.room_ids[index]}/can_write`)
+        .set(next_status)
+        .then(() => {
+          self.rooms[index].can_write = next_status;
+        })
+        .catch(() => {
+          // TODO: alert
         });
     }
   }
