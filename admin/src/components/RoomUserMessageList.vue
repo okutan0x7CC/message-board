@@ -1,15 +1,12 @@
 <template>
-  <div id="room-message-list">
-    <div>
-      <router-link :to="{ path: `/rooms/${roomId}/messages/create` }">create message</router-link>
-    </div>
+  <div>
+    <div>user_id: {{ userId }}</div>
     <table>
       <thead>
         <tr>
           <th>timestamp</th>
           <th>text</th>
           <th>nickname</th>
-          <th>user_id</th>
           <th>is hidden</th>
         </tr>
       </thead>
@@ -19,11 +16,6 @@
             <td>{{ messages[index].timestamp | formatDatetime }}</td>
             <td>{{ messages[index].text }}</td>
             <td>{{ messages[index].nickname }}</td>
-            <td>
-              <router-link
-                :to="{ path: `/rooms/${roomId}/users/${messages[index].user_id}/messages` }"
-              >{{ messages[index].user_id }}</router-link>
-            </td>
             <td>
               <span v-if="hidden_messages[message_id] === undefined">shown</span>
               <span v-else>hidden</span>
@@ -41,8 +33,7 @@ import moment from "moment-timezone";
 import { db } from "./../main.js";
 
 export default {
-  name: "RoomMessageList",
-  components: {},
+  name: "RoomUserMessageList",
   data: function() {
     return {
       message_ids: [],
@@ -53,20 +44,33 @@ export default {
   computed: {
     roomId: function() {
       return this.$route.params.room_id;
+    },
+    userId: function() {
+      return this.$route.params.user_id;
     }
   },
   created: function() {
     const self = this;
-    db.ref(`messages/${this.roomId}`).on("child_added", snapshot => {
-      self.message_ids.unshift(snapshot.key);
-      self.messages.unshift(snapshot.val());
-    });
+    db.ref(`messages/${this.roomId}`)
+      .orderByChild("user_id")
+      .equalTo(this.userId)
+      .on("child_added", snapshot => {
+        self.message_ids.unshift(snapshot.key);
+        self.messages.unshift(snapshot.val());
+      });
     db.ref(`hidden_messages/${this.roomId}`).on("child_added", snapshot => {
       self.$set(self.hidden_messages, snapshot.key, snapshot.val());
     });
     db.ref(`hidden_messages/${this.roomId}`).on("child_removed", snapshot => {
       self.$delete(self.hidden_messages, snapshot.key);
     });
+  },
+  filters: {
+    formatDatetime: function(timestamp) {
+      return moment(timestamp)
+        .tz("Asia/Tokyo")
+        .format("YYYY-MM-DD HH:mm:ss");
+    }
   },
   methods: {
     toggleHidden: function(index) {
@@ -91,13 +95,6 @@ export default {
             // TODO: alert
           });
       }
-    }
-  },
-  filters: {
-    formatDatetime: function(timestamp) {
-      return moment(timestamp)
-        .tz("Asia/Tokyo")
-        .format("YYYY-MM-DD HH:mm:ss");
     }
   }
 };
