@@ -9,7 +9,7 @@
           <th>timestamp</th>
           <th>text</th>
           <th>nickname</th>
-          <th>delete message</th>
+          <th>is hidden</th>
         </tr>
       </thead>
       <tbody>
@@ -19,7 +19,9 @@
             <td>{{ messages[index].text }}</td>
             <td>{{ messages[index].nickname }}</td>
             <td>
-              <button v-on:click="deleteMessage(message_id, index)">delete</button>
+              <span v-if="hidden_messages[message_id] === undefined">shown</span>
+              <span v-else>hidden</span>
+              <button v-on:click="toggleHidden(index)">toggle</button>
             </td>
           </tr>
         </div>
@@ -38,7 +40,8 @@ export default {
   data: function() {
     return {
       message_ids: [],
-      messages: []
+      messages: [],
+      hidden_messages: {}
     };
   },
   computed: {
@@ -58,22 +61,36 @@ export default {
       self.message_ids.unshift(snapshot.key);
       self.messages.unshift(snapshot.val());
     });
+    db.ref(`hidden_messages/${this.roomId}`).on("child_added", snapshot => {
+      self.$set(self.hidden_messages, snapshot.key, snapshot.val());
+    });
+    db.ref(`hidden_messages/${this.roomId}`).on("child_removed", snapshot => {
+      self.$delete(self.hidden_messages, snapshot.key);
+    });
   },
   methods: {
-    deleteMessage: function(message_id, index) {
-      const promise_message = db
-        .ref(`messages/${this.roomId}/${message_id}`)
-        .remove();
-      const self = this;
-      Promise.all([promise_message])
-        .then(() => {
-          self.message_ids.splice(index, 1);
-          self.messages.splice(index, 1);
-        })
-        .catch(() => {
-          // todo: alert
-          return;
-        });
+    toggleHidden: function(index) {
+      const do_hide =
+        this.hidden_messages[this.message_ids[index]] === undefined;
+      if (do_hide) {
+        db.ref(`hidden_messages/${this.roomId}/${this.message_ids[index]}`)
+          .set(true)
+          .then(() => {
+            // todo: alert
+          })
+          .catch(() => {
+            // todo: alert
+          });
+      } else {
+        db.ref(`hidden_messages/${this.roomId}/${this.message_ids[index]}`)
+          .remove()
+          .then(() => {
+            // todo: alert
+          })
+          .catch(() => {
+            // todo: alert
+          });
+      }
     }
   },
   filters: {
