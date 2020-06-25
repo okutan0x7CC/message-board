@@ -65,9 +65,20 @@ export default {
       const promise_messages = db
         .ref(`messages/${this.room_ids[index]}`)
         .remove();
+      const promise_hidden_messages = db
+        .ref(`hidden_messages/${this.room_ids[index]}`)
+        .remove();
+      const promise_muted_users = db
+        .ref(`muted_users/${this.room_ids[index]}`)
+        .remove();
 
       const self = this;
-      Promise.all([promise_room, promise_messages])
+      Promise.all([
+        promise_room,
+        promise_messages,
+        promise_hidden_messages,
+        promise_muted_users
+      ])
         .then(() => {
           self.room_ids.splice(index, 1);
           self.rooms.splice(index, 1);
