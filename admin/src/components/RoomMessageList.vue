@@ -11,6 +11,7 @@
           <th>nickname</th>
           <th>user_id</th>
           <th>is hidden</th>
+          <th>is user muted</th>
         </tr>
       </thead>
       <tbody>
@@ -28,6 +29,11 @@
               <span v-if="hidden_messages[message_id] === undefined">shown</span>
               <span v-else>hidden</span>
               <button v-on:click="toggleHidden(index)">toggle</button>
+            </td>
+            <td>
+              <span v-if="muted_users[messages[index].user_id] === undefined">not muted</span>
+              <span v-else>muted</span>
+              <button v-on:click="toggleMuted(index)">toggle</button>
             </td>
           </tr>
         </div>
@@ -47,7 +53,8 @@ export default {
     return {
       message_ids: [],
       messages: [],
-      hidden_messages: {}
+      hidden_messages: {},
+      muted_users: {}
     };
   },
   computed: {
@@ -67,6 +74,12 @@ export default {
     db.ref(`hidden_messages/${this.roomId}`).on("child_removed", snapshot => {
       self.$delete(self.hidden_messages, snapshot.key);
     });
+    db.ref(`muted_users/${this.roomId}`).on("child_added", snapshot => {
+      self.$set(self.muted_users, snapshot.key, snapshot.val());
+    });
+    db.ref(`muted_users/${this.roomId}`).on("child_removed", snapshot => {
+      self.$delete(self.muted_users, snapshot.key);
+    });
   },
   methods: {
     toggleHidden: function(index) {
@@ -83,6 +96,29 @@ export default {
           });
       } else {
         db.ref(`hidden_messages/${this.roomId}/${this.message_ids[index]}`)
+          .remove()
+          .then(() => {
+            // TODO: alert
+          })
+          .catch(() => {
+            // TODO: alert
+          });
+      }
+    },
+    toggleMuted: function(index) {
+      const do_mute =
+        this.muted_users[this.messages[index].user_id] === undefined;
+      if (do_mute) {
+        db.ref(`muted_users/${this.roomId}/${this.messages[index].user_id}`)
+          .set(true)
+          .then(() => {
+            // TODO: alert
+          })
+          .catch(() => {
+            // TODO: alert
+          });
+      } else {
+        db.ref(`muted_users/${this.roomId}/${this.messages[index].user_id}`)
           .remove()
           .then(() => {
             // TODO: alert

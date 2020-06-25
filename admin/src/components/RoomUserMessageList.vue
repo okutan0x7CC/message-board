@@ -1,6 +1,11 @@
 <template>
   <div>
     <div>user_id: {{ userId }}</div>
+    <div>
+      <span v-if="is_muted">muted</span>
+      <span v-else>not muted</span>
+      <button v-on:click="toggleMuted()">toggle</button>
+    </div>
     <table>
       <thead>
         <tr>
@@ -38,7 +43,8 @@ export default {
     return {
       message_ids: [],
       messages: [],
-      hidden_messages: {}
+      hidden_messages: {},
+      is_muted: false
     };
   },
   computed: {
@@ -51,6 +57,11 @@ export default {
   },
   created: function() {
     const self = this;
+    db.ref(`muted_users/${this.roomId}/${this.userId}`)
+      .once("value")
+      .then(snapshot => {
+        self.is_muted = snapshot.val();
+      });
     db.ref(`messages/${this.roomId}`)
       .orderByChild("user_id")
       .equalTo(this.userId)
@@ -73,6 +84,31 @@ export default {
     }
   },
   methods: {
+    toggleMuted: function() {
+      const do_mute = !this.is_muted;
+      const self = this;
+      if (do_mute) {
+        db.ref(`muted_users/${this.roomId}/${this.userId}`)
+          .set(true)
+          .then(() => {
+            // TODO: alert
+            self.is_muted = true;
+          })
+          .catch(() => {
+            // TODO: alert
+          });
+      } else {
+        db.ref(`muted_users/${this.roomId}/${this.userId}`)
+          .remove()
+          .then(() => {
+            // TODO: alert
+            self.is_muted = false;
+          })
+          .catch(() => {
+            // TODO: alert
+          });
+      }
+    },
     toggleHidden: function(index) {
       const do_hide =
         this.hidden_messages[this.message_ids[index]] === undefined;
