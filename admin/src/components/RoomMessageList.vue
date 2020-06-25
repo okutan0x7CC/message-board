@@ -26,7 +26,7 @@
               >{{ messages[index].user_id }}</router-link>
             </td>
             <td>
-              <span v-if="hidden_messages[message_id] === undefined">shown</span>
+              <span v-if="hidden_messages[message_id] === undefined">not hidden</span>
               <span v-else>hidden</span>
               <button v-on:click="toggleHidden(index)">toggle</button>
             </td>
