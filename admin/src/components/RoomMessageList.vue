@@ -10,6 +10,7 @@
           <th>text</th>
           <th>nickname</th>
           <th>user_id</th>
+          <th>reactions</th>
           <th>is hidden</th>
           <th>is user muted</th>
         </tr>
@@ -25,6 +26,7 @@
                 :to="{ path: `/rooms/${roomId}/users/${messages[index].user_id}/messages` }"
               >{{ messages[index].user_id }}</router-link>
             </td>
+            <td>{{ numberOfReactions(message_id) }}</td>
             <td>
               <span v-if="hidden_messages[message_id] === undefined">not hidden</span>
               <span v-else>hidden</span>
@@ -54,7 +56,8 @@ export default {
       message_ids: [],
       messages: [],
       hidden_messages: {},
-      muted_users: {}
+      muted_users: {},
+      reactions: {}
     };
   },
   computed: {
@@ -80,8 +83,22 @@ export default {
     db.ref(`muted_users/${this.roomId}`).on("child_removed", snapshot => {
       self.$delete(self.muted_users, snapshot.key);
     });
+    db.ref(`reactions/${this.roomId}`).on("child_added", snapshot => {
+      const reaction = snapshot.val();
+      self.$set(self.reactions, reaction.message_id, reaction.user_id);
+    });
+    db.ref(`reactions/${this.roomId}`).on("child_removed", snapshot => {
+      const reaction = snapshot.val();
+      self.$delete(self.reactions, reaction.message_id);
+    });
   },
   methods: {
+    numberOfReactions: function(message_id) {
+      if (this.reactions[message_id] === undefined) {
+        return 0;
+      }
+      return Object.keys(this.reactions[message_id]).length;
+    },
     toggleHidden: function(index) {
       const do_hide =
         this.hidden_messages[this.message_ids[index]] === undefined;
