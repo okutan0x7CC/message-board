@@ -1,7 +1,7 @@
 <template>
   <div id="room-list">
     <div>
-      <router-link to="/rooms/create">create room</router-link>
+      <router-link :to="{ name: 'RoomCreate' }">create room</router-link>
     </div>
     <table>
       <thead>
@@ -16,7 +16,12 @@
         <div v-for="(room_id, index) in room_ids" :key="room_id">
           <tr>
             <td>
-              <router-link :to="{ path: `/rooms/${room_id}` }">{{ rooms[index].private_title }}</router-link>
+              <router-link
+                :to="{ 
+                  name: 'RoomMessageList', 
+                  params: {room_id: room_id}
+                }"
+              >{{ rooms[index].private_title }}</router-link>
             </td>
             <td>
               {{ rooms[index].can_read }}

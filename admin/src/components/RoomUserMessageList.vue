@@ -22,7 +22,9 @@
             <td>{{ messages[index].text }}</td>
             <td>{{ messages[index].nickname }}</td>
             <td>
-              <span v-if="hidden_messages[message_id] === undefined">shown</span>
+              <span v-if="hidden_messages[message_id] === undefined"
+                >shown</span
+              >
               <span v-else>hidden</span>
               <button v-on:click="toggleHidden(index)">toggle</button>
             </td>
@@ -44,7 +46,8 @@ export default {
       message_ids: [],
       messages: [],
       hidden_messages: {},
-      is_muted: false
+      is_muted: false,
+      room: {},
     };
   },
   computed: {
@@ -53,35 +56,57 @@ export default {
     },
     userId: function() {
       return this.$route.params.user_id;
-    }
+    },
   },
   created: function() {
     const self = this;
-    db.ref(`muted_users/${this.roomId}/${this.userId}`)
-      .once("value")
-      .then(snapshot => {
-        self.is_muted = snapshot.val();
-      });
     db.ref(`messages/${this.roomId}`)
       .orderByChild("user_id")
       .equalTo(this.userId)
-      .on("child_added", snapshot => {
+      .on("child_added", (snapshot) => {
         self.message_ids.unshift(snapshot.key);
         self.messages.unshift(snapshot.val());
       });
-    db.ref(`hidden_messages/${this.roomId}`).on("child_added", snapshot => {
+
+    db.ref(`muted_users/${this.roomId}/${this.userId}`)
+      .once("value")
+      .then((snapshot) => {
+        self.is_muted = snapshot.val();
+      });
+
+    db.ref(`hidden_messages/${this.roomId}`).on("child_added", (snapshot) => {
       self.$set(self.hidden_messages, snapshot.key, snapshot.val());
     });
-    db.ref(`hidden_messages/${this.roomId}`).on("child_removed", snapshot => {
+    db.ref(`hidden_messages/${this.roomId}`).on("child_removed", (snapshot) => {
       self.$delete(self.hidden_messages, snapshot.key);
     });
+
+    // get room and get user from latest message
+    const promise_room = db.ref(`rooms/${this.roomId}`).once("value");
+    const promise_latest_message = db
+      .ref(`messages/${this.roomId}`)
+      .limitToLast(1)
+      .once("value");
+    Promise.all([promise_room, promise_latest_message]).then(
+      ([snapshot_room, snapshot_latest_message]) => {
+        self.room = snapshot_room.val();
+        let latest_message = {};
+        snapshot_latest_message.forEach((child) => {
+          latest_message = child.val();
+        });
+        self.$emit("update:navigation_link_titles", {
+          room_title: self.room.private_title,
+          nickname: latest_message.nickname,
+        });
+      }
+    );
   },
   filters: {
     formatDatetime: function(timestamp) {
       return moment(timestamp)
         .tz("Asia/Tokyo")
         .format("YYYY-MM-DD HH:mm:ss");
-    }
+    },
   },
   methods: {
     toggleMuted: function() {
@@ -131,8 +156,8 @@ export default {
             // TODO: alert
           });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

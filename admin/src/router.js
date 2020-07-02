@@ -31,12 +31,12 @@ const routes = [
     component: RoomMessageList,
   },
   {
-    path: "/rooms/:room_id/users/:user_id/messages",
+    path: "/rooms/:room_id/users/:user_id",
     name: "RoomUserMessageList",
     component: RoomUserMessageList,
   },
   {
-    path: "/rooms/:room_id/messages/create",
+    path: "/rooms/:room_id/messages-create",
     name: "RoomMessageCreate",
     component: RoomMessageCreate,
   },

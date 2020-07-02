@@ -5,7 +5,8 @@
     <div v-else-if="!login_user.can_read">権限がありません</div>
     <div v-else>
       <the-topbar :login_user="login_user" />
-      <router-view />
+      <the-navigationbar :link_titles="navigation_link_titles" />
+      <router-view :navigation_link_titles.sync="navigation_link_titles" />
     </div>
   </div>
 </template>
@@ -13,11 +14,13 @@
 <script>
 import { firebase, db, auth } from "./main.js";
 import TheTopbar from "./components/TheTopbar.vue";
+import TheNavigationbar from "./components/TheNavigationbar.vue";
 
 export default {
   name: "App",
   components: {
-    TheTopbar
+    TheTopbar,
+    TheNavigationbar,
   },
   data: function() {
     return {
@@ -27,13 +30,14 @@ export default {
         photo_url: null,
         email: null,
         can_read: false,
-        can_write: false
-      }
+        can_write: false,
+      },
+      navigation_link_titles: {},
     };
   },
   created: function() {
     const self = this;
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged((user) => {
       const is_logged_in = user !== null;
       if (!is_logged_in) {
         self.googleLogin();
@@ -48,7 +52,7 @@ export default {
       let provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope("email");
       let self = this;
-      auth.signInWithRedirect(provider).catch(error => {
+      auth.signInWithRedirect(provider).catch((error) => {
         self.is_authentication_failure = true;
         console.log(error);
       });
@@ -59,7 +63,7 @@ export default {
         `admin_user_emails/${firebase_user.email.replace(".", "%2E")}/can_read`
       )
         .once("value")
-        .then(snapshot => {
+        .then((snapshot) => {
           self.is_authenticating = false;
           self.is_authentication_failure = false;
           self.login_user.email = firebase_user.email;
@@ -79,10 +83,10 @@ export default {
         `admin_user_emails/${firebase_user.email.replace(".", "%2E")}/can_write`
       )
         .once("value")
-        .then(snapshot => {
+        .then((snapshot) => {
           self.login_user.can_write = snapshot.val();
         });
-    }
-  }
+    },
+  },
 };
 </script>
