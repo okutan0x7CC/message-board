@@ -17,8 +17,8 @@ export default {
   props: {
     link_titles: {
       room_title: null,
-      nickname: null,
-    },
+      user_id: null
+    }
   },
   computed: {
     links: function() {
@@ -28,11 +28,11 @@ export default {
       for (const [i, directory] of directories.entries()) {
         links.push({
           path: i === 0 ? `/${directory}` : `${links[i - 1].path}/${directory}`,
-          title: this.linkTitle(i, directories),
+          title: this.linkTitle(i, directories)
         });
       }
       return links;
-    },
+    }
   },
   methods: {
     linkTitle: function(index, directories) {
@@ -43,12 +43,12 @@ export default {
         case "rooms":
           return this.link_titles.room_title;
         case "users":
-          return this.link_titles.nickname;
+          return this.link_titles.user_id;
         default:
           return directories[index];
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

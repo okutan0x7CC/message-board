@@ -1,10 +1,7 @@
 <template>
   <div id="room-message-list">
     <div>
-      <router-link
-        :to="{ name: 'RoomMessageCreate', params: { room_id: roomId } }"
-        >create message</router-link
-      >
+      <router-link :to="{ name: 'RoomMessageCreate', params: { room_id: roomId } }">create message</router-link>
     </div>
     <table>
       <thead>
@@ -33,21 +30,16 @@
                     user_id: messages[index].user_id,
                   },
                 }"
-                >{{ messages[index].user_id }}</router-link
-              >
+              >{{ messages[index].user_id }}</router-link>
             </td>
             <td>{{ numberOfReactions(message_id) }}</td>
             <td>
-              <span v-if="hidden_messages[message_id] === undefined"
-                >not hidden</span
-              >
+              <span v-if="hidden_messages[message_id] === undefined">not hidden</span>
               <span v-else>hidden</span>
               <button v-on:click="toggleHidden(index)">toggle</button>
             </td>
             <td>
-              <span v-if="muted_users[messages[index].user_id] === undefined"
-                >not muted</span
-              >
+              <span v-if="muted_users[messages[index].user_id] === undefined">not muted</span>
               <span v-else>muted</span>
               <button v-on:click="toggleMuted(index)">toggle</button>
             </td>
@@ -72,45 +64,50 @@ export default {
       messages: [],
       hidden_messages: {},
       muted_users: {},
-      reactions: {},
+      reactions: {}
     };
   },
   computed: {
     roomId: function() {
       return this.$route.params.room_id;
-    },
+    }
+  },
+  beforeMount: function() {
+    this.$emit("update:navigation_link_titles", {
+      room_title: ""
+    });
   },
   created: function() {
     const self = this;
     db.ref(`rooms/${this.roomId}`)
       .once("value")
-      .then((snapshot) => {
+      .then(snapshot => {
         self.room = snapshot.val();
         self.$emit("update:navigation_link_titles", {
-          room_title: self.room.private_title,
+          room_title: self.room.private_title
         });
       });
-    db.ref(`messages/${this.roomId}`).on("child_added", (snapshot) => {
+    db.ref(`messages/${this.roomId}`).on("child_added", snapshot => {
       self.message_ids.unshift(snapshot.key);
       self.messages.unshift(snapshot.val());
     });
-    db.ref(`hidden_messages/${this.roomId}`).on("child_added", (snapshot) => {
+    db.ref(`hidden_messages/${this.roomId}`).on("child_added", snapshot => {
       self.$set(self.hidden_messages, snapshot.key, snapshot.val());
     });
-    db.ref(`hidden_messages/${this.roomId}`).on("child_removed", (snapshot) => {
+    db.ref(`hidden_messages/${this.roomId}`).on("child_removed", snapshot => {
       self.$delete(self.hidden_messages, snapshot.key);
     });
-    db.ref(`muted_users/${this.roomId}`).on("child_added", (snapshot) => {
+    db.ref(`muted_users/${this.roomId}`).on("child_added", snapshot => {
       self.$set(self.muted_users, snapshot.key, snapshot.val());
     });
-    db.ref(`muted_users/${this.roomId}`).on("child_removed", (snapshot) => {
+    db.ref(`muted_users/${this.roomId}`).on("child_removed", snapshot => {
       self.$delete(self.muted_users, snapshot.key);
     });
-    db.ref(`reactions/${this.roomId}`).on("child_added", (snapshot) => {
+    db.ref(`reactions/${this.roomId}`).on("child_added", snapshot => {
       const reaction = snapshot.val();
       self.$set(self.reactions, reaction.message_id, reaction.user_id);
     });
-    db.ref(`reactions/${this.roomId}`).on("child_removed", (snapshot) => {
+    db.ref(`reactions/${this.roomId}`).on("child_removed", snapshot => {
       const reaction = snapshot.val();
       self.$delete(self.reactions, reaction.message_id);
     });
@@ -167,15 +164,15 @@ export default {
             // TODO: alert
           });
       }
-    },
+    }
   },
   filters: {
     formatDatetime: function(timestamp) {
       return moment(timestamp)
         .tz("Asia/Tokyo")
         .format("YYYY-MM-DD HH:mm:ss");
-    },
-  },
+    }
+  }
 };
 </script>
 
