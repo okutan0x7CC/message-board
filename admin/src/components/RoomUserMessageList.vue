@@ -56,14 +56,13 @@ export default {
       return this.$route.params.user_id;
     }
   },
-  beforeMount: function() {
+  created: function() {
+    const self = this;
+
     this.$emit("update:navigation_link_titles", {
       room_title: "",
       user_id: ""
     });
-  },
-  created: function() {
-    const self = this;
 
     db.ref(`rooms/${this.roomId}`)
       .once("value")

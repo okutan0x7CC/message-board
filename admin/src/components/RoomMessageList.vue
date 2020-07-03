@@ -72,13 +72,13 @@ export default {
       return this.$route.params.room_id;
     }
   },
-  beforeMount: function() {
+  created: function() {
+    const self = this;
+
     this.$emit("update:navigation_link_titles", {
       room_title: ""
     });
-  },
-  created: function() {
-    const self = this;
+
     db.ref(`rooms/${this.roomId}`)
       .once("value")
       .then(snapshot => {
