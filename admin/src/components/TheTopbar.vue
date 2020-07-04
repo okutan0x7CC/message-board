@@ -1,15 +1,22 @@
 <template>
-  <div id="topbar">
-    <div>email: {{ login_user.email }}</div>
-    <div>can_read: {{ login_user.can_read }}</div>
-    <div>can_write: {{ login_user.can_write }}</div>
-    <div>
-      <img :src="login_user.photo_url" />
-    </div>
-    <div>
-      <button v-on:click="logout()">log out</button>
-    </div>
-  </div>
+  <i-navbar collapse="xs">
+    <i-navbar-brand :to="{ name: 'RoomList' }">MessageBoard</i-navbar-brand>
+    <i-navbar-items>
+      <i-nav>
+        <i-nav-item :to="{ name: 'contact' }">AdminAccounts</i-nav-item>
+      </i-nav>
+      <i-nav>
+        <i-dropdown placement="bottom-end">
+          <i-button variant="primary" link>
+            <img v-if="login_user.photo_url" :src="login_user.photo_url" alt="icon" />
+          </i-button>
+          <i-dropdown-menu>
+            <i-dropdown-item v-on:click="logout()">logout</i-dropdown-item>
+          </i-dropdown-menu>
+        </i-dropdown>
+      </i-nav>
+    </i-navbar-items>
+  </i-navbar>
 </template>
 
 <script>
@@ -29,10 +36,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#topbar {
-  background-color: gray;
-}
 img {
-  height: 40px;
+  height: 36px;
+  border-radius: 50%;
 }
 </style>

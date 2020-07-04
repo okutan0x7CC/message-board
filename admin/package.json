@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@inkline/inkline": "^2.2.3",
     "core-js": "^3.6.4",
     "firebase": "^7.15.5",
     "moment-timezone": "^0.5.31",

@@ -1,44 +1,48 @@
 <template>
-  <div id="room-list">
-    <div>
-      <router-link :to="{ name: 'RoomCreate' }">create room</router-link>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>private title</th>
-          <th>can read</th>
-          <th>can write</th>
-          <th>delete room</th>
-        </tr>
-      </thead>
-      <tbody>
-        <div v-for="(room_id, index) in room_ids" :key="room_id">
-          <tr>
-            <td>
-              <router-link
-                :to="{ 
-                  name: 'RoomMessageList', 
-                  params: {room_id: room_id}
+  <i-container>
+    <i-row end-xs>
+      <i-column xs="3">
+        <i-button variant="primary" :to="{ name: 'RoomCreate' }">create room</i-button>
+      </i-column>
+    </i-row>
+    <i-row>
+      <i-column xs="12">
+        <i-table bordered hover striped responsive>
+          <thead>
+            <tr>
+              <th scope="row">private title</th>
+              <th scope="row">can read</th>
+              <th scope="row">can write</th>
+              <th scope="row">delete room</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(room_id, index) in room_ids" :key="room_id">
+              <th scope="row">
+                <router-link
+                  :to="{
+                  name: 'RoomMessageList',
+                  params: { room_id: room_id },
                 }"
-              >{{ rooms[index].private_title }}</router-link>
-            </td>
-            <td>
-              {{ rooms[index].can_read }}
-              <button v-on:click="toggleCanRead(index)">toggle</button>
-            </td>
-            <td>
-              {{ rooms[index].can_write }}
-              <button v-on:click="toggleCanWrite(index)">toggle</button>
-            </td>
-            <td>
-              <button v-on:click="deleteRoom(index)">delete</button>
-            </td>
-          </tr>
-        </div>
-      </tbody>
-    </table>
-  </div>
+                >{{ rooms[index].private_title }}</router-link>
+              </th>
+              <td>
+                {{ rooms[index].can_read }}
+                <button v-on:click="toggleCanRead(index)">toggle</button>
+              </td>
+              <td>
+                {{ rooms[index].can_write }}
+                <button v-on:click="toggleCanWrite(index)">toggle</button>
+              </td>
+              <td>
+                <button v-on:click="deleteRoom(index)">delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </i-table>
+      </i-column>
+    </i-row>
+  </i-container>
 </template>
 
 <script>
@@ -122,19 +126,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-table {
-  tbody {
-    display: block;
-    overflow: auto;
-  }
-  thead,
-  tbody tr {
-    width: 100%;
-    display: table;
-    table-layout: fixed;
-  }
-  td {
-    word-break: break-all;
-  }
+tbody {
+  width: 100%;
 }
 </style>

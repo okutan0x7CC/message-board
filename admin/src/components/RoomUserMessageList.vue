@@ -59,19 +59,10 @@ export default {
   created: function() {
     const self = this;
 
-    this.$emit("update:navigation_link_titles", {
-      room_title: "",
-      user_id: ""
-    });
-
     db.ref(`rooms/${this.roomId}`)
       .once("value")
       .then(snapshot => {
         self.room = snapshot.val();
-        self.$emit("update:navigation_link_titles", {
-          room_title: self.room.private_title,
-          user_id: this.userId
-        });
       });
 
     db.ref(`messages/${this.roomId}`)

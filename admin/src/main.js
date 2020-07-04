@@ -1,6 +1,8 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router.js";
+import "@inkline/inkline/dist/inkline.css";
+import Inkline from "@inkline/inkline";
 import firebase_app from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
@@ -22,6 +24,8 @@ export const db = firebase.database();
 export const auth = firebase.auth();
 
 Vue.config.productionTip = false;
+
+Vue.use(Inkline);
 
 new Vue({
   router,

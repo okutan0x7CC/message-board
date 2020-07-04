@@ -1,26 +1,33 @@
 <template>
-  <div id="app">
-    <div v-if="is_authenticating">認証中...</div>
-    <div v-else-if="is_authentication_failure">認証失敗</div>
-    <div v-else-if="!login_user.can_read">権限がありません</div>
-    <div v-else>
+  <i-layout id="app">
+    <i-layout-header>
       <the-topbar :login_user="login_user" />
-      <the-navigationbar :link_titles="navigation_link_titles" />
-      <router-view :navigation_link_titles.sync="navigation_link_titles" />
-    </div>
-  </div>
+    </i-layout-header>
+    <i-layout-content>
+      <i-container>
+        <i-row center-xs>
+          <i-column xs="12">
+            <div v-if="is_authenticating">認証中...</div>
+            <div v-else-if="is_authentication_failure">認証失敗</div>
+            <div v-else-if="!login_user.can_read">権限がありません</div>
+            <div v-else>
+              <router-view :navigation_link_titles.sync="navigation_link_titles" />
+            </div>
+          </i-column>
+        </i-row>
+      </i-container>
+    </i-layout-content>
+  </i-layout>
 </template>
 
 <script>
 import { firebase, db, auth } from "./main.js";
 import TheTopbar from "./components/TheTopbar.vue";
-import TheNavigationbar from "./components/TheNavigationbar.vue";
 
 export default {
   name: "App",
   components: {
-    TheTopbar,
-    TheNavigationbar,
+    TheTopbar
   },
   data: function() {
     return {
@@ -30,14 +37,16 @@ export default {
         photo_url: null,
         email: null,
         can_read: false,
-        can_write: false,
+        can_write: false
       },
-      navigation_link_titles: {},
+      navigation_link_titles: {}
     };
   },
   created: function() {
+    this.$inkline.config.variant = "dark";
+
     const self = this;
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(user => {
       const is_logged_in = user !== null;
       if (!is_logged_in) {
         self.googleLogin();
@@ -52,7 +61,7 @@ export default {
       let provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope("email");
       let self = this;
-      auth.signInWithRedirect(provider).catch((error) => {
+      auth.signInWithRedirect(provider).catch(error => {
         self.is_authentication_failure = true;
         console.log(error);
       });
@@ -63,7 +72,7 @@ export default {
         `admin_user_emails/${firebase_user.email.replace(".", "%2E")}/can_read`
       )
         .once("value")
-        .then((snapshot) => {
+        .then(snapshot => {
           self.is_authenticating = false;
           self.is_authentication_failure = false;
           self.login_user.email = firebase_user.email;
@@ -83,10 +92,10 @@ export default {
         `admin_user_emails/${firebase_user.email.replace(".", "%2E")}/can_write`
       )
         .once("value")
-        .then((snapshot) => {
+        .then(snapshot => {
           self.login_user.can_write = snapshot.val();
         });
-    },
-  },
+    }
+  }
 };
 </script>
