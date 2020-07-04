@@ -23,7 +23,7 @@
 import { auth } from "./../main.js";
 
 export default {
-  name: "TheTopbar",
+  name: "TheNavigationBar",
   props: {
     login_user: Object
   },

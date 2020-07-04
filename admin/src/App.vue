@@ -1,7 +1,7 @@
 <template>
   <i-layout id="app">
     <i-layout-header>
-      <the-topbar :login_user="login_user" />
+      <the-navigation-bar :login_user="login_user" />
     </i-layout-header>
     <i-layout-content>
       <i-container>
@@ -22,12 +22,12 @@
 
 <script>
 import { firebase, db, auth } from "./main.js";
-import TheTopbar from "./components/TheTopbar.vue";
+import TheNavigationBar from "./components/TheNavigationBar.vue";
 
 export default {
   name: "App",
   components: {
-    TheTopbar
+    TheNavigationBar
   },
   data: function() {
     return {
