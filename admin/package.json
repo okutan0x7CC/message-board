@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode staging",
-    "build:staging": "vue-cli-service build --mode staging",
+    "lint": "vue-cli-service lint",
     "build:production": "vue-cli-service build --mode production",
-    "lint": "vue-cli-service lint"
+    "build:staging": "vue-cli-service build --mode staging"
   },
   "dependencies": {
     "@inkline/inkline": "^2.2.3",
@@ -17,6 +17,7 @@
     "vue-router": "^3.3.4"
   },
   "devDependencies": {
+    "@inkline/vue-cli-plugin-inkline": "~2.2.3",
     "@vue/cli-plugin-babel": "~4.3.0",
     "@vue/cli-plugin-eslint": "~4.3.0",
     "@vue/cli-plugin-router": "~4.3.0",
