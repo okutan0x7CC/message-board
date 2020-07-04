@@ -1,6 +1,6 @@
 <template>
   <i-container>
-    <i-row end-xs>
+    <i-row end-xs class="_padding-1">
       <i-column xs="3">
         <i-button variant="primary" :to="{ name: 'RoomCreate' }">create room</i-button>
       </i-column>
