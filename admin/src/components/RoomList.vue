@@ -2,7 +2,9 @@
   <i-container>
     <i-row end-xs class="_padding-1">
       <i-column xs="3">
-        <i-button variant="primary" :to="{ name: 'RoomCreate' }">create room</i-button>
+        <i-button variant="primary" :to="{ name: 'RoomCreate' }"
+          >create room</i-button
+        >
       </i-column>
     </i-row>
     <i-row>
@@ -21,18 +23,41 @@
               <th scope="row">
                 <router-link
                   :to="{
-                  name: 'RoomMessageList',
-                  params: { room_id: room_id },
-                }"
-                >{{ rooms[index].private_title }}</router-link>
+                    name: 'RoomMessageList',
+                    params: { room_id: room_id },
+                  }"
+                  >{{ rooms[index].private_title }}</router-link
+                >
               </th>
               <td>
-                {{ rooms[index].can_read }}
-                <button v-on:click="toggleCanRead(index)">toggle</button>
+                <i-toggle
+                  v-if="can_write_by_logged_in_user"
+                  v-model="rooms[index].can_read"
+                  v-on:click.native="toggleCanRead(index)"
+                >
+                </i-toggle>
+                <i-toggle
+                  v-else
+                  v-model="rooms[index].can_read"
+                  readonly
+                  disabled
+                >
+                </i-toggle>
               </td>
               <td>
-                {{ rooms[index].can_write }}
-                <button v-on:click="toggleCanWrite(index)">toggle</button>
+                <i-toggle
+                  v-if="can_write_by_logged_in_user"
+                  v-model="rooms[index].can_write"
+                  v-on:click.native="toggleCanWrite(index)"
+                >
+                </i-toggle>
+                <i-toggle
+                  v-else
+                  v-model="rooms[index].can_write"
+                  readonly
+                  disabled
+                >
+                </i-toggle>
               </td>
               <td>
                 <button v-on:click="deleteRoom(index)">delete</button>
@@ -51,18 +76,21 @@ import { db } from "./../main.js";
 export default {
   name: "RoomList",
   components: {},
+  props: {
+    can_write_by_logged_in_user: Boolean,
+  },
   data() {
     return {
       room_ids: [],
-      rooms: []
+      rooms: [],
     };
   },
   created: function() {
     const self = this;
     db.ref("rooms")
       .once("value")
-      .then(snapshot => {
-        snapshot.forEach(child => {
+      .then((snapshot) => {
+        snapshot.forEach((child) => {
           self.room_ids.unshift(child.key);
           self.rooms.unshift(child.val());
         });
@@ -86,7 +114,7 @@ export default {
         promise_room,
         promise_messages,
         promise_hidden_messages,
-        promise_muted_users
+        promise_muted_users,
       ])
         .then(() => {
           self.room_ids.splice(index, 1);
@@ -120,8 +148,8 @@ export default {
         .catch(() => {
           // TODO: alert
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

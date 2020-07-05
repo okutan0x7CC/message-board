@@ -1,22 +1,24 @@
 <template>
   <i-layout id="app">
-    <i-layout-header>
-      <the-navigation-bar :login_user="login_user" />
-    </i-layout-header>
-    <i-layout-content>
-      <i-container>
-        <i-row center-xs>
-          <i-column xs="12">
-            <div v-if="is_authenticating">認証中...</div>
-            <div v-else-if="is_authentication_failure">認証失敗</div>
-            <div v-else-if="!login_user.can_read">権限がありません</div>
-            <div v-else>
-              <router-view />
-            </div>
-          </i-column>
-        </i-row>
-      </i-container>
-    </i-layout-content>
+    <div v-if="is_authenticating">認証中...</div>
+    <div v-else-if="is_authentication_failure">認証失敗</div>
+    <div v-else-if="!login_user.can_read">権限がありません</div>
+    <div v-else>
+      <i-layout-header>
+        <the-navigation-bar :login_user="login_user" />
+      </i-layout-header>
+      <i-layout-content>
+        <i-container>
+          <i-row center-xs>
+            <i-column xs="12">
+              <router-view
+                :can_write_by_logged_in_user="login_user.can_write"
+              />
+            </i-column>
+          </i-row>
+        </i-container>
+      </i-layout-content>
+    </div>
   </i-layout>
 </template>
 

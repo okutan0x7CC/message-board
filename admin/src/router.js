@@ -14,11 +14,13 @@ const routes = [
     path: "/",
     component: RoomList,
     alias: "/rooms",
+    props: true,
   },
   {
     path: "/rooms",
     name: "RoomList",
     component: RoomList,
+    props: true,
   },
   {
     path: "/rooms/create",
