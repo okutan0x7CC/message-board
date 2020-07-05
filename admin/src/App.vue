@@ -1,15 +1,21 @@
 <template>
-  <div id="app">
+  <i-layout id="app">
     <i-layout v-if="is_authenticating" class="_vh-100">
       <div class="_margin-auto _text-center" style="height: 60px; width: 60px">
         <i-loader size="auto" variant="dark" />認証中...
       </div>
     </i-layout>
     <i-layout v-else-if="is_authentication_failure" class="_vh-100">
-      <div class="_margin-auto _text-center" style="height: 100px; width: 100px">認証失敗</div>
+      <div class="_margin-auto _text-center" style="height: 100px; width: 140px">
+        認証失敗
+        <i-button class="_margin-top-1" v-on:click="otherAccount()">Other Account</i-button>
+      </div>
     </i-layout>
     <i-layout v-else-if="!login_user.can_read" class="_vh-100">
-      <div class="_margin-auto _text-center" style="height: 120px; width: 120px">権限がありません</div>
+      <div class="_margin-auto _text-center" style="height: 100px; width: 140px">
+        権限がありません
+        <i-button class="_margin-top-1" v-on:click="otherAccount()">Other Account</i-button>
+      </div>
     </i-layout>
     <i-layout v-else>
       <i-layout-header class="_padding-0">
@@ -25,7 +31,7 @@
         </i-container>
       </i-layout-content>
     </i-layout>
-  </div>
+  </i-layout>
 </template>
 
 <script>
@@ -88,9 +94,7 @@ export default {
         })
         .catch(() => {
           self.is_authentication_failure = true;
-          auth.signOut().finally(() => {
-            self.googleLogin();
-          });
+          self.otherAccount();
         });
     },
     verifyWritePermission: function(firebase_user) {
@@ -102,6 +106,11 @@ export default {
         .then(snapshot => {
           self.login_user.can_write = snapshot.val();
         });
+    },
+    otherAccount: function() {
+      auth.signOut().finally(() => {
+        self.googleLogin();
+      });
     }
   }
 };
