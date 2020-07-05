@@ -1,16 +1,43 @@
 <template>
-  <i-layout id="app">
-    <div v-if="is_authenticating">認証中...</div>
-    <div v-else-if="is_authentication_failure">認証失敗</div>
-    <div v-else-if="!login_user.can_read">権限がありません</div>
-    <div v-else>
-      <i-layout-header>
+  <div id="app">
+    <i-layout v-if="is_authenticating" class="_vh-100">
+      <div
+        class="_margin-auto _text-center"
+        style="height: 100px; width: 100px"
+      >
+        <i-loader size="auto" variant="dark" />
+        認証中...
+      </div>
+    </i-layout>
+    <i-layout v-else-if="is_authentication_failure" class="_vh-100">
+      <div
+        class="_margin-auto _text-center"
+        style="height: 100px; width: 100px"
+      >
+        認証失敗
+      </div>
+    </i-layout>
+    <i-layout v-else-if="!login_user.can_read" class="_vh-100">
+      <div
+        class="_margin-auto _text-center"
+        style="height: 100px; width: 100px"
+      >
+        権限がありません
+      </div>
+    </i-layout>
+    <i-layout v-else>
+      <i-layout-header class="_padding-0">
         <the-navigation-bar :login_user="login_user" />
       </i-layout-header>
       <i-layout-content>
         <i-container>
+          <i-row class="_padding-left-2 _padding-top-2">
+            <i-column>
+              <the-breadcrumb></the-breadcrumb>
+            </i-column>
+          </i-row>
           <i-row center-xs>
-            <i-column xs="12">
+            <i-column>
               <router-view
                 :can_write_by_logged_in_user="login_user.can_write"
               />
@@ -18,18 +45,20 @@
           </i-row>
         </i-container>
       </i-layout-content>
-    </div>
-  </i-layout>
+    </i-layout>
+  </div>
 </template>
 
 <script>
 import { firebase, db, auth } from "./main.js";
 import TheNavigationBar from "./components/TheNavigationBar.vue";
+import TheBreadcrumb from "./components/TheBreadcrumb.vue";
 
 export default {
   name: "App",
   components: {
     TheNavigationBar,
+    TheBreadcrumb,
   },
   data: function() {
     return {

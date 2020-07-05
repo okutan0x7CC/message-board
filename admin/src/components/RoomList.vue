@@ -2,12 +2,8 @@
   <i-container>
     <i-row end-xs class="_padding-1">
       <i-column xs="3">
-        <i-button
-          class="_padding-left-1-2"
-          variant="primary"
-          :to="{ name: 'RoomCreate' }"
-        >
-          <img class="_margin-right-1-2" src="svg/add-24px.svg" />
+        <i-button variant="primary" :to="{ name: 'RoomCreate' }">
+          <i-icon icon="plus" class="_padding-right-1"></i-icon>
           create room
         </i-button>
       </i-column>
@@ -70,7 +66,7 @@
                   class="_padding-0"
                   link
                 >
-                  <img src="svg/delete_forever-danger-18dp.svg" height="20" />
+                  <i-icon icon="minus" class="_text-danger"></i-icon>
                 </i-button>
               </td>
             </tr>
