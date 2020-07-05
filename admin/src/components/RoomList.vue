@@ -8,7 +8,7 @@
       </i-column>
     </i-row>
     <i-row end-xs class="_padding-1">
-      <i-column xs="5">
+      <i-column>
         <i-button v-if="can_write_by_logged_in_user" variant="primary" :to="{ name: 'RoomCreate' }">
           <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Room
         </i-button>

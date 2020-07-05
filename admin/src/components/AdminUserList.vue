@@ -24,11 +24,11 @@ export default {
     return {
       admin_users: {},
       columns: [
-        { title: "email", path: "email" },
-        { title: "can read", path: "can_read" },
-        { title: "can write", path: "can_write" }
+        { title: "email", path: "id" },
+        { title: "can read", path: "authorities.can_read" },
+        { title: "can write", path: "authorities.can_write" }
       ],
-      rows: [{ email: "hoge", can_read: false, can_write: true }]
+      rows: []
     };
   },
   created: function() {
@@ -36,7 +36,13 @@ export default {
     db.ref("admin_users")
       .once("value")
       .then(snapshot => {
-        self.admin_users = snapshot.val();
+        snapshot.forEach(child_snapshot => {
+          const email_encoded = child_snapshot.key;
+          self.rows.push({
+            id: email_encoded.replace("%2E", "."),
+            authorities: child_snapshot.val()
+          });
+        });
       });
   }
 };
