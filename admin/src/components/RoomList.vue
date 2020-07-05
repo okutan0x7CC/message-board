@@ -1,5 +1,14 @@
 <template>
   <i-container>
+    <i-row>
+      <i-column>
+        <i-breadcrumb class="_padding-left-2 _padding-top-2">
+          <i-breadcrumb-item active>
+            Rooms
+          </i-breadcrumb-item>
+        </i-breadcrumb>
+      </i-column>
+    </i-row>
     <i-row end-xs class="_padding-1">
       <i-column xs="3">
         <i-button variant="primary" :to="{ name: 'RoomCreate' }">
