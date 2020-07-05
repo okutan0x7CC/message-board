@@ -2,9 +2,14 @@
   <i-container>
     <i-row end-xs class="_padding-1">
       <i-column xs="3">
-        <i-button variant="primary" :to="{ name: 'RoomCreate' }"
-          >create room</i-button
+        <i-button
+          class="_padding-left-1-2"
+          variant="primary"
+          :to="{ name: 'RoomCreate' }"
         >
+          <img class="_margin-right-1-2" src="svg/add-24px.svg" />
+          create room
+        </i-button>
       </i-column>
     </i-row>
     <i-row>
@@ -60,7 +65,13 @@
                 </i-toggle>
               </td>
               <td>
-                <button v-on:click="deleteRoom(index)">delete</button>
+                <i-button
+                  v-on:click="deleteRoom(index)"
+                  class="_padding-0"
+                  link
+                >
+                  <img src="svg/delete_forever-danger-18dp.svg" height="20" />
+                </i-button>
               </td>
             </tr>
           </tbody>
