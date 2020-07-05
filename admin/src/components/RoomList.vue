@@ -9,11 +9,17 @@
         </i-breadcrumb>
       </i-column>
     </i-row>
-    <i-row end-xs class="_padding-1">
-      <i-column xs="3">
-        <i-button variant="primary" :to="{ name: 'RoomCreate' }">
-          <i-icon icon="plus" class="_padding-right-1"></i-icon>
-          create room
+    <i-row end-xs class="_padding-1 ">
+      <i-column xs="5">
+        <i-button
+          v-if="can_write_by_logged_in_user"
+          variant="primary"
+          :to="{ name: 'RoomCreate' }"
+        >
+          <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Room
+        </i-button>
+        <i-button v-else variant="primary" disabled readonly>
+          <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Room
         </i-button>
       </i-column>
     </i-row>
@@ -71,10 +77,14 @@
               </td>
               <td>
                 <i-button
+                  v-if="can_write_by_logged_in_user"
                   v-on:click="deleteRoom(index)"
                   class="_padding-0"
                   link
                 >
+                  <i-icon icon="minus" class="_text-danger"></i-icon>
+                </i-button>
+                <i-button v-else class="_padding-0" link readonly disabled>
                   <i-icon icon="minus" class="_text-danger"></i-icon>
                 </i-button>
               </td>
