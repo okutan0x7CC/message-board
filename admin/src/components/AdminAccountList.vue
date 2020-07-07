@@ -9,7 +9,14 @@
     </i-row>
     <i-row class="_margin-top-1">
       <i-column>
-        <i-datatable :columns="columns" :rows="rows" />
+        <i-datatable
+          :columns="columns"
+          :rows="rows"
+          :footer="false"
+          :responsive="true"
+          :striped="true"
+          :hover="true"
+        />
       </i-column>
     </i-row>
   </i-container>
@@ -19,10 +26,9 @@
 import { db } from "./../main.js";
 
 export default {
-  name: "AdminUserList",
+  name: "AdminAccountList",
   data: function() {
     return {
-      admin_users: {},
       columns: [
         { title: "email", path: "id" },
         { title: "can read", path: "authorities.can_read" },
@@ -33,7 +39,7 @@ export default {
   },
   created: function() {
     const self = this;
-    db.ref("admin_users")
+    db.ref("admin_accounts")
       .once("value")
       .then(snapshot => {
         snapshot.forEach(child_snapshot => {

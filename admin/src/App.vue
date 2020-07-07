@@ -81,7 +81,9 @@ export default {
     },
     verifyReadPermission: function(firebase_user) {
       const self = this;
-      db.ref(`admin_users/${firebase_user.email.replace(".", "%2E")}/can_read`)
+      db.ref(
+        `admin_accounts/${firebase_user.email.replace(".", "%2E")}/can_read`
+      )
         .once("value")
         .then(snapshot => {
           self.is_authenticating = false;
@@ -97,7 +99,9 @@ export default {
     },
     verifyWritePermission: function(firebase_user) {
       const self = this;
-      db.ref(`admin_users/${firebase_user.email.replace(".", "%2E")}/can_write`)
+      db.ref(
+        `admin_accounts/${firebase_user.email.replace(".", "%2E")}/can_write`
+      )
         .once("value")
         .then(snapshot => {
           self.login_user.can_write = snapshot.val();

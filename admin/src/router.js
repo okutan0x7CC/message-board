@@ -5,7 +5,7 @@ import RoomCreate from "./components/RoomCreate.vue";
 import RoomMessageList from "./components/RoomMessageList.vue";
 import RoomUserMessageList from "./components/RoomUserMessageList.vue";
 import RoomMessageCreate from "./components/RoomMessageCreate.vue";
-import AdminUserList from "./components/AdminUserList.vue";
+import AdminAccountList from "./components/AdminAccountList.vue";
 import NotFound from "./errors/NotFound.vue";
 
 Vue.use(VueRouter);
@@ -44,9 +44,9 @@ const routes = [
     component: RoomMessageCreate,
   },
   {
-    path: "/admin_users",
-    name: "AdminUserList",
-    component: AdminUserList,
+    path: "/admin_accounts",
+    name: "AdminAccountList",
+    component: AdminAccountList,
   },
   {
     path: "*",
