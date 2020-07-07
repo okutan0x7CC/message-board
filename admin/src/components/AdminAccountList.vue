@@ -24,6 +24,7 @@
 
 <script>
 import { db } from "./../main.js";
+import AdminAccountToggle from "./AdminAccountToggle.vue";
 
 export default {
   name: "AdminAccountList",
@@ -31,9 +32,21 @@ export default {
     return {
       columns: [
         { title: "email", path: "id" },
-        { title: "read", path: "authorities.can_read" },
-        { title: "write", path: "authorities.can_write" },
-        { title: "manage account", path: "authorities.can_manage_account" }
+        {
+          title: "read",
+          path: "can_read",
+          component: AdminAccountToggle
+        },
+        {
+          title: "write",
+          path: "can_write",
+          component: AdminAccountToggle
+        },
+        {
+          title: "manage account",
+          path: "can_manage_account",
+          component: AdminAccountToggle
+        }
       ],
       rows: []
     };
@@ -44,10 +57,13 @@ export default {
       .once("value")
       .then(snapshot => {
         snapshot.forEach(child_snapshot => {
-          const email_encoded = child_snapshot.key;
+          const email = child_snapshot.key.replace("%2E", ".");
+          const authorities = child_snapshot.val();
           self.rows.push({
-            id: email_encoded.replace("%2E", "."),
-            authorities: child_snapshot.val()
+            id: email,
+            can_read: authorities.can_read,
+            can_write: authorities.can_write,
+            can_manage_account: authorities.can_manage_account
           });
         });
       });
