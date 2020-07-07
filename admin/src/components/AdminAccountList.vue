@@ -31,8 +31,9 @@ export default {
     return {
       columns: [
         { title: "email", path: "id" },
-        { title: "can read", path: "authorities.can_read" },
-        { title: "can write", path: "authorities.can_write" }
+        { title: "read", path: "authorities.can_read" },
+        { title: "write", path: "authorities.can_write" },
+        { title: "manage account", path: "authorities.can_manage_account" }
       ],
       rows: []
     };

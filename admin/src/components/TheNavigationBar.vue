@@ -3,7 +3,7 @@
     <i-navbar-brand :to="{ name: 'RoomList' }">MessageBoard</i-navbar-brand>
     <i-navbar-items>
       <i-nav>
-        <i-nav-item :to="{ name: 'AdminUserList' }">AdminAccounts</i-nav-item>
+        <i-nav-item :to="{ name: 'AdminAccountList' }">AdminAccounts</i-nav-item>
       </i-nav>
       <i-nav>
         <i-dropdown placement="bottom-end">
