@@ -8,9 +8,9 @@ fi
 
 PROJECT=$1
 TARGET=$2
-printf "\n- PROJECT: $PROJECT\n- TARGET:  $TARGET\nDo you really want to deploy it? [y/n]: "
-read yn
-if [ $yn != y ]; then
+printf "\n- PROJECT: $PROJECT\n- TARGET:  $TARGET\nDo you really want to deploy it? [n/y]: "
+read ny
+if [ "$ny" != y ]; then
     exit
 fi
 
