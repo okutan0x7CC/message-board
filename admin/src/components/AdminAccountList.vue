@@ -27,9 +27,8 @@
 
 <script>
 import { db } from "./../main.js";
-import AdminAccountToggle from "./AdminAccountToggle.vue";
-import AdminAccountDeleteButton from "./AdminAccountDeleteButton.vue";
 import PermissionDenied from "./../errors/PermissionDenied.vue";
+import AdminAccountRow from "./AdminAccountRow.vue";
 
 export default {
   name: "AdminAccountList",
@@ -46,22 +45,22 @@ export default {
         {
           title: "read",
           path: "can_read",
-          component: AdminAccountToggle
+          component: AdminAccountRow
         },
         {
           title: "write",
           path: "can_write",
-          component: AdminAccountToggle
+          component: AdminAccountRow
         },
         {
           title: "manage account",
           path: "can_manage_account",
-          component: AdminAccountToggle
+          component: AdminAccountRow
         },
         {
           title: "delete",
           path: "delete",
-          component: AdminAccountDeleteButton
+          component: AdminAccountRow
         }
       ],
       rows: []
