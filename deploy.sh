@@ -33,6 +33,9 @@ case $TARGET in
             firebase deploy --project=$PROJECT --only hosting:$PROJECT-client
         fi
         ;;
+    functions)
+        firebase deploy --project=$PROJECT --only functions
+        ;;
     database)
         firebase deploy --project=$PROJECT --only database
         ;;

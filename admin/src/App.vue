@@ -6,15 +6,25 @@
       </div>
     </i-layout>
     <i-layout v-else-if="is_authentication_failure" class="_vh-100">
-      <div class="_margin-auto _text-center" style="height: 100px; width: 140px">
+      <div
+        class="_margin-auto _text-center"
+        style="height: 100px; width: 140px"
+      >
         認証失敗
-        <i-button class="_margin-top-1" v-on:click="otherAccount()">Other Account</i-button>
+        <i-button class="_margin-top-1" v-on:click="otherAccount()"
+          >Other Account</i-button
+        >
       </div>
     </i-layout>
     <i-layout v-else-if="!login_user.can_read" class="_vh-100">
-      <div class="_margin-auto _text-center" style="height: 100px; width: 140px">
+      <div
+        class="_margin-auto _text-center"
+        style="height: 100px; width: 140px"
+      >
         権限がありません
-        <i-button class="_margin-top-1" v-on:click="otherAccount()">Other Account</i-button>
+        <i-button class="_margin-top-1" v-on:click="otherAccount()"
+          >Other Account</i-button
+        >
       </div>
     </i-layout>
     <i-layout v-else>
@@ -25,7 +35,9 @@
         <i-container>
           <i-row center-xs>
             <i-column>
-              <router-view :can_write_by_logged_in_user="login_user.can_write" />
+              <router-view
+                :can_write_by_logged_in_user="login_user.can_write"
+              />
             </i-column>
           </i-row>
         </i-container>
@@ -41,7 +53,7 @@ import TheNavigationBar from "./components/TheNavigationBar.vue";
 export default {
   name: "App",
   components: {
-    TheNavigationBar
+    TheNavigationBar,
   },
   data: function() {
     return {
@@ -51,15 +63,15 @@ export default {
         photo_url: null,
         email: null,
         can_read: false,
-        can_write: false
-      }
+        can_write: false,
+      },
     };
   },
   created: function() {
     this.$inkline.config.variant = "dark";
 
     const self = this;
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged((user) => {
       const is_logged_in = user !== null;
       if (!is_logged_in) {
         self.googleLogin();
@@ -74,7 +86,7 @@ export default {
       let provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope("email");
       let self = this;
-      auth.signInWithRedirect(provider).catch(error => {
+      auth.signInWithRedirect(provider).catch((error) => {
         self.is_authentication_failure = true;
         console.log(error);
       });
@@ -82,10 +94,10 @@ export default {
     verifyReadPermission: function(firebase_user) {
       const self = this;
       db.ref(
-        `admin_accounts/${firebase_user.email.replace(".", "%2E")}/can_read`
+        `admin_accounts/${firebase_user.email.replace(/\./g, "%2E")}/can_read`
       )
         .once("value")
-        .then(snapshot => {
+        .then((snapshot) => {
           self.is_authenticating = false;
           self.is_authentication_failure = false;
           self.login_user.email = firebase_user.email;
@@ -100,10 +112,10 @@ export default {
     verifyWritePermission: function(firebase_user) {
       const self = this;
       db.ref(
-        `admin_accounts/${firebase_user.email.replace(".", "%2E")}/can_write`
+        `admin_accounts/${firebase_user.email.replace(/\./g, "%2E")}/can_write`
       )
         .once("value")
-        .then(snapshot => {
+        .then((snapshot) => {
           self.login_user.can_write = snapshot.val();
         });
     },
@@ -111,7 +123,7 @@ export default {
       auth.signOut().finally(() => {
         self.googleLogin();
       });
-    }
-  }
+    },
+  },
 };
 </script>

@@ -1,6 +1,7 @@
 import firebase_app from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
+import "firebase/functions";
 const firebaseConfig = {
   apiKey: process.env.VUE_APP_API_KEY,
   authDomain: process.env.VUE_APP_AUTH_DOMAIN,
@@ -15,6 +16,7 @@ firebase_app.initializeApp(firebaseConfig);
 export const firebase = firebase_app;
 export const db = firebase.database();
 export const auth = firebase.auth();
+export const functions = firebase.functions();
 
 import Vue from "vue";
 import App from "./App.vue";

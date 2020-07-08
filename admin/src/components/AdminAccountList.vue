@@ -25,6 +25,7 @@
 <script>
 import { db } from "./../main.js";
 import AdminAccountToggle from "./AdminAccountToggle.vue";
+import AdminAccountDeleteButton from "./AdminAccountDeleteButton.vue";
 
 export default {
   name: "AdminAccountList",
@@ -35,41 +36,46 @@ export default {
         {
           title: "read",
           path: "can_read",
-          component: AdminAccountToggle
+          component: AdminAccountToggle,
         },
         {
           title: "write",
           path: "can_write",
-          component: AdminAccountToggle
+          component: AdminAccountToggle,
         },
         {
           title: "manage account",
           path: "can_manage_account",
-          component: AdminAccountToggle
-        }
+          component: AdminAccountToggle,
+        },
+        {
+          title: "delete",
+          path: "delete",
+          component: AdminAccountDeleteButton,
+        },
       ],
-      rows: []
+      rows: [],
     };
   },
-  created: function() {
+  created() {
     const self = this;
     db.ref("admin_accounts")
       .once("value")
-      .then(snapshot => {
-        snapshot.forEach(child_snapshot => {
-          const email = child_snapshot.key.replace("%2E", ".");
+      .then((snapshot) => {
+        snapshot.forEach((child_snapshot) => {
+          const email = child_snapshot.key.replace(/%2E/g, ".");
           const authorities = child_snapshot.val();
           self.rows.push({
             id: email,
             can_read: authorities.can_read,
             can_write: authorities.can_write,
-            can_manage_account: authorities.can_manage_account
+            can_manage_account: authorities.can_manage_account,
+            delete: true,
           });
         });
       });
-  }
+  },
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
