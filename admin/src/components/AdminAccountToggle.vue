@@ -1,15 +1,6 @@
 <template>
-  <i-toggle
-    v-if="isSelfCanManageAccount || isSelfCanReadAccount"
-    v-model="row[column.path]"
-    readonly
-    disabled
-  ></i-toggle>
-  <i-toggle
-    v-else
-    v-model="row[column.path]"
-    v-on:click.native="toggle"
-  ></i-toggle>
+  <i-toggle v-if="isSelfRow" v-model="row[column.path]" readonly disabled></i-toggle>
+  <i-toggle v-else v-model="row[column.path]" v-on:click.native="toggle"></i-toggle>
 </template>
 
 <script>
@@ -19,22 +10,13 @@ export default {
   name: "AdminAccountToggle",
   props: ["row", "column", "index"],
   computed: {
-    isSelfCanManageAccount() {
-      return (
-        auth.currentUser.email === this.row["id"] &&
-        this.column.path === "can_manage_account"
-      );
-    },
-    isSelfCanReadAccount() {
-      return (
-        auth.currentUser.email === this.row["id"] &&
-        this.column.path === "can_read"
-      );
-    },
+    isSelfRow() {
+      return auth.currentUser.email === this.row["id"];
+    }
   },
   methods: {
     toggle() {
-      if (this.isSelfCanManageAccount || this.isSelfCanReadAccount) {
+      if (this.isSelfRow) {
         return;
       }
       const next_status = !this.row[this.column.path];
@@ -44,7 +26,7 @@ export default {
         .catch(() => {
           // TODO: alert
         });
-    },
-  },
+    }
+  }
 };
 </script>

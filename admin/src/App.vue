@@ -1,34 +1,11 @@
 <template>
-  <i-layout id="app">
-    <i-layout v-if="is_authenticating" class="_vh-100">
-      <div class="_margin-auto _text-center" style="height: 64px; width: 64px">
-        <i-loader size="auto" variant="dark" />認証中
-      </div>
-    </i-layout>
-    <i-layout v-else-if="is_authentication_failure" class="_vh-100">
-      <div
-        class="_margin-auto _text-center"
-        style="height: 100px; width: 140px"
-      >
-        認証失敗
-        <i-button class="_margin-top-1" v-on:click="otherAccount()">
-          Other Account
-        </i-button>
-      </div>
-    </i-layout>
-    <i-layout
-      v-else-if="!login_user.can_read && !login_user.can_manage_account"
-      class="_vh-100"
-    >
-      <div
-        class="_margin-auto _text-center"
-        style="height: 100px; width: 140px"
-      >
-        権限がありません
-        <i-button class="_margin-top-1" v-on:click="otherAccount()">
-          Other Account
-        </i-button>
-      </div>
+  <div id="app">
+    <i-layout v-if="shouldDisplayAuth">
+      <auth-process
+        :is_authenticating="is_authenticating"
+        :is_authentication_failure="is_authentication_failure"
+        :can_read_by_login_user="login_user.can_read"
+      />
     </i-layout>
     <i-layout v-else>
       <i-layout-header class="_padding-0">
@@ -50,17 +27,19 @@
         </i-container>
       </i-layout-content>
     </i-layout>
-  </i-layout>
+  </div>
 </template>
 
 <script>
 import { firebase, db, auth } from "./main.js";
 import TheNavigationBar from "./components/TheNavigationBar.vue";
+import AuthProcess from "./components/AuthProcess.vue";
 
 export default {
   name: "App",
   components: {
     TheNavigationBar,
+    AuthProcess
   },
   data: function() {
     return {
@@ -71,15 +50,24 @@ export default {
         email: null,
         can_read: false,
         can_write: false,
-        can_manage_account: false,
-      },
+        can_manage_account: false
+      }
     };
+  },
+  computed: {
+    shouldDisplayAuth() {
+      return (
+        this.is_authenticating ||
+        this.is_authentication_failure ||
+        !this.login_user.can_read
+      );
+    }
   },
   created: function() {
     this.$inkline.config.variant = "dark";
 
     const self = this;
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(user => {
       const is_logged_in = user !== null;
       if (!is_logged_in) {
         self.googleLogin();
@@ -95,7 +83,7 @@ export default {
       let provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope("email");
       let self = this;
-      auth.signInWithRedirect(provider).catch((error) => {
+      auth.signInWithRedirect(provider).catch(error => {
         self.is_authentication_failure = true;
         console.log(error);
       });
@@ -104,7 +92,7 @@ export default {
       const self = this;
       db.ref(`admin_accounts/${email.replace(/\./g, "%2E")}`)
         .once("value")
-        .then((snapshot) => {
+        .then(snapshot => {
           self.is_authenticating = false;
           self.is_authentication_failure = false;
           const authorities = snapshot.val();
@@ -114,14 +102,14 @@ export default {
         })
         .catch(() => {
           self.is_authentication_failure = true;
-          self.otherAccount();
+          self.relogin();
         });
     },
-    otherAccount: function() {
+    relogin: function() {
       auth.signOut().finally(() => {
         self.googleLogin();
       });
-    },
-  },
+    }
+  }
 };
 </script>
