@@ -1,5 +1,5 @@
 <template>
-  <i-container>
+  <i-container v-if="can_manage_account_by_login_user">
     <i-row>
       <i-column>
         <i-breadcrumb class="_padding-left-2 _padding-top-2">
@@ -20,6 +20,13 @@
       </i-column>
     </i-row>
   </i-container>
+  <i-container v-else>
+    <i-row class="_vh-100">
+      <i-column class="_margin-auto _padding-bottom-8">
+        権限がありません
+      </i-column>
+    </i-row>
+  </i-container>
 </template>
 
 <script>
@@ -29,6 +36,9 @@ import AdminAccountDeleteButton from "./AdminAccountDeleteButton.vue";
 
 export default {
   name: "AdminAccountList",
+  props: {
+    can_manage_account_by_login_user: Boolean,
+  },
   data: function() {
     return {
       columns: [

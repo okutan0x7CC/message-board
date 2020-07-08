@@ -47,6 +47,7 @@ const routes = [
     path: "/admin_accounts",
     name: "AdminAccountList",
     component: AdminAccountList,
+    props: true,
   },
   {
     path: "*",

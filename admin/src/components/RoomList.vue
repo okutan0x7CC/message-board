@@ -1,5 +1,5 @@
 <template>
-  <i-container>
+  <i-container v-if="can_read">
     <i-row>
       <i-column>
         <i-breadcrumb class="_padding-left-2 _padding-top-2">
@@ -9,7 +9,11 @@
     </i-row>
     <i-row end-xs class="_padding-1">
       <i-column>
-        <i-button v-if="can_write_by_logged_in_user" variant="primary" :to="{ name: 'RoomCreate' }">
+        <i-button
+          v-if="can_write_by_logged_in_user"
+          variant="primary"
+          :to="{ name: 'RoomCreate' }"
+        >
           <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Room
         </i-button>
         <i-button v-else variant="primary" disabled readonly>
@@ -36,7 +40,8 @@
                     name: 'RoomMessageList',
                     params: { room_id: room_id },
                   }"
-                >{{ rooms[index].private_title }}</router-link>
+                  >{{ rooms[index].private_title }}</router-link
+                >
               </th>
               <td>
                 <i-toggle
@@ -44,7 +49,12 @@
                   v-model="rooms[index].can_read"
                   v-on:click.native="toggleCanRead(index)"
                 ></i-toggle>
-                <i-toggle v-else v-model="rooms[index].can_read" readonly disabled></i-toggle>
+                <i-toggle
+                  v-else
+                  v-model="rooms[index].can_read"
+                  readonly
+                  disabled
+                ></i-toggle>
               </td>
               <td>
                 <i-toggle
@@ -52,7 +62,12 @@
                   v-model="rooms[index].can_write"
                   v-on:click.native="toggleCanWrite(index)"
                 ></i-toggle>
-                <i-toggle v-else v-model="rooms[index].can_write" readonly disabled></i-toggle>
+                <i-toggle
+                  v-else
+                  v-model="rooms[index].can_write"
+                  readonly
+                  disabled
+                ></i-toggle>
               </td>
               <td>
                 <i-button
@@ -73,6 +88,13 @@
       </i-column>
     </i-row>
   </i-container>
+  <i-container v-else>
+    <i-row class="_vh-100">
+      <i-column class="_margin-auto _padding-bottom-8">
+        権限がありません
+      </i-column>
+    </i-row>
+  </i-container>
 </template>
 
 <script>
@@ -82,20 +104,20 @@ export default {
   name: "RoomList",
   components: {},
   props: {
-    can_write_by_logged_in_user: Boolean
+    can_write_by_logged_in_user: Boolean,
   },
   data() {
     return {
       room_ids: [],
-      rooms: []
+      rooms: [],
     };
   },
   created: function() {
     const self = this;
     db.ref("rooms")
       .once("value")
-      .then(snapshot => {
-        snapshot.forEach(child => {
+      .then((snapshot) => {
+        snapshot.forEach((child) => {
           self.room_ids.unshift(child.key);
           self.rooms.unshift(child.val());
         });
@@ -119,7 +141,7 @@ export default {
         promise_room,
         promise_messages,
         promise_hidden_messages,
-        promise_muted_users
+        promise_muted_users,
       ])
         .then(() => {
           self.room_ids.splice(index, 1);
@@ -153,8 +175,8 @@ export default {
         .catch(() => {
           // TODO: alert
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

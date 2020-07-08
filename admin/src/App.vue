@@ -1,8 +1,8 @@
 <template>
   <i-layout id="app">
     <i-layout v-if="is_authenticating" class="_vh-100">
-      <div class="_margin-auto _text-center" style="height: 60px; width: 60px">
-        <i-loader size="auto" variant="dark" />認証中...
+      <div class="_margin-auto _text-center" style="height: 64px; width: 64px">
+        <i-loader size="auto" variant="dark" />認証中
       </div>
     </i-layout>
     <i-layout v-else-if="is_authentication_failure" class="_vh-100">
@@ -11,20 +11,23 @@
         style="height: 100px; width: 140px"
       >
         認証失敗
-        <i-button class="_margin-top-1" v-on:click="otherAccount()"
-          >Other Account</i-button
-        >
+        <i-button class="_margin-top-1" v-on:click="otherAccount()">
+          Other Account
+        </i-button>
       </div>
     </i-layout>
-    <i-layout v-else-if="!login_user.can_read" class="_vh-100">
+    <i-layout
+      v-else-if="!login_user.can_read && !login_user.can_manage_account"
+      class="_vh-100"
+    >
       <div
         class="_margin-auto _text-center"
         style="height: 100px; width: 140px"
       >
         権限がありません
-        <i-button class="_margin-top-1" v-on:click="otherAccount()"
-          >Other Account</i-button
-        >
+        <i-button class="_margin-top-1" v-on:click="otherAccount()">
+          Other Account
+        </i-button>
       </div>
     </i-layout>
     <i-layout v-else>
@@ -37,6 +40,9 @@
             <i-column>
               <router-view
                 :can_write_by_logged_in_user="login_user.can_write"
+                :can_manage_account_by_login_user="
+                  login_user.can_manage_account
+                "
               />
             </i-column>
           </i-row>
@@ -64,6 +70,7 @@ export default {
         email: null,
         can_read: false,
         can_write: false,
+        can_manage_account: false,
       },
     };
   },
@@ -77,8 +84,9 @@ export default {
         self.googleLogin();
         return;
       }
-      self.verifyReadPermission(user);
-      self.verifyWritePermission(user);
+      self.login_user.email = user.email;
+      self.login_user.photo_url = user.photoURL;
+      self.verifyAuthorities(user.email);
     });
   },
   methods: {
@@ -91,32 +99,21 @@ export default {
         console.log(error);
       });
     },
-    verifyReadPermission: function(firebase_user) {
+    verifyAuthorities(email) {
       const self = this;
-      db.ref(
-        `admin_accounts/${firebase_user.email.replace(/\./g, "%2E")}/can_read`
-      )
+      db.ref(`admin_accounts/${email.replace(/\./g, "%2E")}`)
         .once("value")
         .then((snapshot) => {
           self.is_authenticating = false;
           self.is_authentication_failure = false;
-          self.login_user.email = firebase_user.email;
-          self.login_user.photo_url = firebase_user.photoURL;
-          self.login_user.can_read = snapshot.val();
+          const authorities = snapshot.val();
+          self.login_user.can_read = authorities.can_read;
+          self.login_user.can_write = authorities.can_write;
+          self.login_user.can_manage_account = authorities.can_manage_account;
         })
         .catch(() => {
           self.is_authentication_failure = true;
           self.otherAccount();
-        });
-    },
-    verifyWritePermission: function(firebase_user) {
-      const self = this;
-      db.ref(
-        `admin_accounts/${firebase_user.email.replace(/\./g, "%2E")}/can_write`
-      )
-        .once("value")
-        .then((snapshot) => {
-          self.login_user.can_write = snapshot.val();
         });
     },
     otherAccount: function() {
