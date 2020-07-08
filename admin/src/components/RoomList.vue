@@ -1,5 +1,5 @@
 <template>
-  <i-container v-if="can_read">
+  <i-container v-if="can_read_by_logged_in_user">
     <i-row>
       <i-column>
         <i-breadcrumb class="_padding-left-2 _padding-top-2">
@@ -89,21 +89,21 @@
     </i-row>
   </i-container>
   <i-container v-else>
-    <i-row class="_vh-100">
-      <i-column class="_margin-auto _padding-bottom-8">
-        権限がありません
-      </i-column>
-    </i-row>
+    <permission-denied />
   </i-container>
 </template>
 
 <script>
 import { db } from "./../main.js";
+import PermissionDenied from "./../errors/PermissionDenied.vue";
 
 export default {
   name: "RoomList",
-  components: {},
+  components: {
+    PermissionDenied,
+  },
   props: {
+    can_read_by_logged_in_user: Boolean,
     can_write_by_logged_in_user: Boolean,
   },
   data() {

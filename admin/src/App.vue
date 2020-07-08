@@ -39,6 +39,7 @@
           <i-row center-xs>
             <i-column>
               <router-view
+                :can_read_by_logged_in_user="login_user.can_read"
                 :can_write_by_logged_in_user="login_user.can_write"
                 :can_manage_account_by_login_user="
                   login_user.can_manage_account

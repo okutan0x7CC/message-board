@@ -3,12 +3,18 @@
     <i-navbar-brand :to="{ name: 'RoomList' }">MessageBoard</i-navbar-brand>
     <i-navbar-items>
       <i-nav>
-        <i-nav-item :to="{ name: 'AdminAccountList' }">AdminAccounts</i-nav-item>
+        <i-nav-item :to="{ name: 'AdminAccountList' }"
+          >AdminAccounts</i-nav-item
+        >
       </i-nav>
       <i-nav>
         <i-dropdown placement="bottom-end">
           <i-button variant="primary" link>
-            <img v-if="login_user.photo_url" :src="login_user.photo_url" alt="icon" />
+            <img
+              v-if="login_user.photo_url"
+              :src="login_user.photo_url"
+              alt="icon"
+            />
           </i-button>
           <i-dropdown-menu>
             <i-dropdown-item class="_padding-left-1-2 _padding-right-1-2">
@@ -32,7 +38,7 @@ import { auth } from "./../main.js";
 export default {
   name: "TheNavigationBar",
   props: {
-    login_user: Object
+    login_user: Object,
   },
   methods: {
     logout: function() {
@@ -41,8 +47,8 @@ export default {
     toggleDarkMode() {
       this.$inkline.config.variant =
         this.$inkline.config.variant === "light" ? "dark" : "light";
-    }
-  }
+    },
+  },
 };
 </script>
 

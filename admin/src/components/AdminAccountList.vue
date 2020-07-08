@@ -21,11 +21,7 @@
     </i-row>
   </i-container>
   <i-container v-else>
-    <i-row class="_vh-100">
-      <i-column class="_margin-auto _padding-bottom-8">
-        権限がありません
-      </i-column>
-    </i-row>
+    <permission-denied />
   </i-container>
 </template>
 
@@ -33,9 +29,13 @@
 import { db } from "./../main.js";
 import AdminAccountToggle from "./AdminAccountToggle.vue";
 import AdminAccountDeleteButton from "./AdminAccountDeleteButton.vue";
+import PermissionDenied from "./../errors/PermissionDenied.vue";
 
 export default {
   name: "AdminAccountList",
+  components: {
+    PermissionDenied,
+  },
   props: {
     can_manage_account_by_login_user: Boolean,
   },
