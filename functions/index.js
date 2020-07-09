@@ -100,10 +100,3 @@ exports.autoCreateAdminAccount = functions.auth.user().onCreate((user) => {
       can_manage_account: false,
     });
 });
-
-exports.autoDeleteAdminAccount = functions.auth.user().onDelete((user) => {
-  admin
-    .database()
-    .ref(`admin_accounts/${user.email.replace(/\./g, "%2E")}`)
-    .remove();
-});
