@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import RoomList from "./components/RoomList.vue";
 import RoomCreate from "./components/RoomCreate.vue";
 import Room from "./components/Room.vue";
+import RoomDetail from "./components/RoomDetail.vue";
 import RoomUserMessageList from "./components/RoomUserMessageList.vue";
 import RoomMessageCreate from "./components/RoomMessageCreate.vue";
 import AdminAccountList from "./components/AdminAccountList.vue";
@@ -30,18 +31,26 @@ const routes = [
   },
   {
     path: "/rooms/:room_id",
-    name: "Room",
     component: Room,
+    children: [
+      {
+        path: "",
+        name: "RoomDetail",
+        component: RoomDetail,
+        props: true,
+      },
+      {
+        path: "create-message",
+        name: "RoomMessageCreate",
+        component: RoomMessageCreate,
+        props: true,
+      },
+    ],
   },
   {
     path: "/rooms/:room_id/users/:user_id",
     name: "RoomUserMessageList",
     component: RoomUserMessageList,
-  },
-  {
-    path: "/rooms/:room_id/messages-create",
-    name: "RoomMessageCreate",
-    component: RoomMessageCreate,
   },
   {
     path: "/admin_accounts",

@@ -33,7 +33,7 @@
               <th scope="row">
                 <router-link
                   :to="{
-                    name: 'Room',
+                    name: 'RoomDetail',
                     params: { 
                       room_id: room_id,
                       can_read_by_logged_in_user: can_read_by_logged_in_user,

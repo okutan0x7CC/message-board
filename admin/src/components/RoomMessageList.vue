@@ -1,7 +1,7 @@
 <template>
   <div id="room-message-list">
     <div>
-      <router-link :to="{ name: 'RoomMessageCreate', params: { room_id: roomId } }">create message</router-link>
+      <router-link :to="{ name: 'RoomMessageCreate', params: { room_id: room_id } }">create message</router-link>
     </div>
     <table>
       <thead>
@@ -26,7 +26,7 @@
                 :to="{
                   name: 'RoomUserMessageList',
                   params: {
-                    room_id: roomId,
+                    room_id: room_id,
                     user_id: messages[index].user_id,
                   },
                 }"
@@ -57,106 +57,46 @@ import { db } from "./../main.js";
 export default {
   name: "RoomMessageList",
   components: {},
-  data: function() {
-    return {
-      room: {},
-      message_ids: [],
-      messages: [],
-      hidden_messages: {},
-      muted_users: {},
-      reactions: {}
-    };
-  },
-  computed: {
-    roomId: function() {
-      return this.$route.params.room_id;
-    }
-  },
-  created: function() {
-    const self = this;
-
-    db.ref(`rooms/${this.roomId}`)
-      .once("value")
-      .then(snapshot => {
-        self.room = snapshot.val();
-      });
-    db.ref(`messages/${this.roomId}`).on("child_added", snapshot => {
-      self.message_ids.unshift(snapshot.key);
-      self.messages.unshift(snapshot.val());
-    });
-    db.ref(`hidden_messages/${this.roomId}`).on("child_added", snapshot => {
-      self.$set(self.hidden_messages, snapshot.key, snapshot.val());
-    });
-    db.ref(`hidden_messages/${this.roomId}`).on("child_removed", snapshot => {
-      self.$delete(self.hidden_messages, snapshot.key);
-    });
-    db.ref(`muted_users/${this.roomId}`).on("child_added", snapshot => {
-      self.$set(self.muted_users, snapshot.key, snapshot.val());
-    });
-    db.ref(`muted_users/${this.roomId}`).on("child_removed", snapshot => {
-      self.$delete(self.muted_users, snapshot.key);
-    });
-    db.ref(`reactions/${this.roomId}`).on("child_added", snapshot => {
-      const reaction = snapshot.val();
-      self.$set(self.reactions, reaction.message_id, reaction.user_id);
-    });
-    db.ref(`reactions/${this.roomId}`).on("child_removed", snapshot => {
-      const reaction = snapshot.val();
-      self.$delete(self.reactions, reaction.message_id);
-    });
+  props: {
+    can_read_by_logged_in_user: Boolean,
+    can_write_by_logged_in_user: Boolean,
+    room_id: String,
+    room: Object,
+    message_ids: Array,
+    messages: Array,
+    hidden_messages: Object,
+    muted_users: Object,
+    reactions: Object
   },
   methods: {
-    numberOfReactions: function(message_id) {
-      if (this.reactions[message_id] === undefined) {
-        return 0;
-      }
-      return Object.keys(this.reactions[message_id]).length;
-    },
     toggleHidden: function(index) {
-      const do_hide =
-        this.hidden_messages[this.message_ids[index]] === undefined;
-      if (do_hide) {
-        db.ref(`hidden_messages/${this.roomId}/${this.message_ids[index]}`)
-          .set(true)
-          .then(() => {
-            // TODO: alert
-          })
-          .catch(() => {
-            // TODO: alert
-          });
-      } else {
-        db.ref(`hidden_messages/${this.roomId}/${this.message_ids[index]}`)
-          .remove()
-          .then(() => {
-            // TODO: alert
-          })
-          .catch(() => {
-            // TODO: alert
-          });
-      }
+      const next_status =
+        this.hidden_messages[this.message_ids[index]] === undefined
+          ? true
+          : null; // set(null) は remove() と同じ
+
+      db.ref(`hidden_messages/${this.room_id}/${this.message_ids[index]}`)
+        .set(next_status)
+        .then(() => {
+          // TODO: alert
+        })
+        .catch(() => {
+          // TODO: alert
+        });
     },
     toggleMuted: function(index) {
-      const do_mute =
-        this.muted_users[this.messages[index].user_id] === undefined;
-      if (do_mute) {
-        db.ref(`muted_users/${this.roomId}/${this.messages[index].user_id}`)
-          .set(true)
-          .then(() => {
-            // TODO: alert
-          })
-          .catch(() => {
-            // TODO: alert
-          });
-      } else {
-        db.ref(`muted_users/${this.roomId}/${this.messages[index].user_id}`)
-          .remove()
-          .then(() => {
-            // TODO: alert
-          })
-          .catch(() => {
-            // TODO: alert
-          });
-      }
+      const next_status =
+        this.hidden_messages[this.message_ids[index]] === undefined
+          ? true
+          : null; // set(null) は remove() と同じ
+      db.ref(`muted_users/${this.room_id}/${this.messages[index].user_id}`)
+        .set(next_status)
+        .then(() => {
+          // TODO: alert
+        })
+        .catch(() => {
+          // TODO: alert
+        });
     }
   },
   filters: {
@@ -170,19 +110,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-table {
-  tbody {
-    display: block;
-    overflow: auto;
-  }
-  thead,
-  tbody tr {
-    width: 100%;
-    display: table;
-    table-layout: fixed;
-  }
-  td {
-    word-break: break-all;
-  }
+tbody {
+  width: 100%;
 }
 </style>
