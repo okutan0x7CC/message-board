@@ -1,7 +1,7 @@
 <template>
   <i-layout v-if="true">
     <i-layout-content>
-      <i-content>
+      <i-container>
         <i-row center-xs class="_vh-100">
           <i-column class="_margin-auto">
             <div v-if="is_authenticating">
@@ -26,7 +26,7 @@
             </div>
           </i-column>
         </i-row>
-      </i-content>
+      </i-container>
     </i-layout-content>
   </i-layout>
 </template>
