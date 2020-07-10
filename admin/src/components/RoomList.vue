@@ -33,8 +33,8 @@
               <th scope="row">
                 <router-link
                   :to="{
-                    name: 'RoomMessageList',
-                    params: { room_id: room_id },
+                    name: 'Room',
+                    params: { room_id: room_id, can_write_by_logged_in_user: can_write_by_logged_in_user },
                   }"
                 >{{ rooms[index].private_title }}</router-link>
               </th>
