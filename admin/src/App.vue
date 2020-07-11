@@ -64,8 +64,6 @@ export default {
     }
   },
   created: function() {
-    this.$inkline.config.variant = "dark";
-
     const self = this;
     auth.onAuthStateChanged(user => {
       const is_logged_in = user !== null;

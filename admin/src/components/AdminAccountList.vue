@@ -27,7 +27,7 @@
 
 <script>
 import { db } from "./../main.js";
-import PermissionDenied from "./../errors/PermissionDenied.vue";
+import PermissionDenied from "./errors/PermissionDenied.vue";
 import AdminAccountRow from "./AdminAccountRow.vue";
 
 export default {

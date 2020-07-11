@@ -13,20 +13,24 @@ const firebaseConfig = {
   measurementId: process.env.VUE_APP_MEASUREMENT_ID,
 };
 firebase_app.initializeApp(firebaseConfig);
+
 export const firebase = firebase_app;
-export const db = firebase.database();
 export const auth = firebase.auth();
 export const functions = firebase.functions();
+export const db = firebase.database();
 
 import Vue from "vue";
 import App from "./App.vue";
-import router from "./router.js";
+import VueRouter from "vue-router";
+import router from "./plugins/router.js";
+import logger from "./plugins/logger.js";
 import { Inkline } from "@inkline/inkline/src";
 import * as components from "@inkline/inkline/src/components";
 import "@inkline/inkline/src/inkline.scss";
-Vue.use(Inkline, { components });
 Vue.config.productionTip = false;
-Vue.use(Inkline);
+Vue.use(VueRouter);
+Vue.use(Inkline, { components });
+Vue.use(logger);
 new Vue({
   router,
   render: (h) => h(App),

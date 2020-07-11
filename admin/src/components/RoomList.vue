@@ -84,7 +84,7 @@
 
 <script>
 import { db } from "./../main.js";
-import PermissionDenied from "./../errors/PermissionDenied.vue";
+import PermissionDenied from "./errors/PermissionDenied.vue";
 
 export default {
   name: "RoomList",
