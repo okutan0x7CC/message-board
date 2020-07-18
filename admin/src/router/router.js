@@ -1,3 +1,5 @@
+"use strict";
+
 import VueRouter from "vue-router";
 import RoomList from "./../components/RoomList.vue";
 import RoomCreate from "./../components/RoomCreate.vue";

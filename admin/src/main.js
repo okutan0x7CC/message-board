@@ -1,3 +1,8 @@
+"use strict";
+
+/**
+ * Firebase initialyze
+ */
 import firebase_app from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
@@ -19,18 +24,23 @@ export const auth = firebase.auth();
 export const functions = firebase.functions();
 export const db = firebase.database();
 
+/**
+ * Vue initialyze
+ */
 import Vue from "vue";
-import App from "./App.vue";
 import VueRouter from "vue-router";
-import router from "./plugins/router.js";
-import logger from "./plugins/logger.js";
 import { Inkline } from "@inkline/inkline/src";
 import * as components from "@inkline/inkline/src/components";
 import "@inkline/inkline/src/inkline.scss";
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
 Vue.use(Inkline, { components });
-Vue.use(logger);
+
+/**
+ * Vue mount
+ */
+import App from "./App.vue";
+import router from "./router/router.js";
 new Vue({
   router,
   render: (h) => h(App),
