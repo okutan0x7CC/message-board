@@ -16,8 +16,7 @@ export const store = {
       can_write: false,
       can_manage_account: false,
     },
-    rooms: [],
-    room_ids: [],
+    rooms: {},
   },
 
   /**
