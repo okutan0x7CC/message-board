@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <i-layout v-if="shouldDisplayAuth">
+    <i-layout v-if="shouldDisplayAuthProcess">
       <auth-process
         :is_authenticating="shared_state.authentication_status.in_process"
         :is_authentication_failure="shared_state.authentication_status.failure"
@@ -48,7 +48,7 @@ export default {
     };
   },
   computed: {
-    shouldDisplayAuth() {
+    shouldDisplayAuthProcess() {
       return (
         this.shared_state.authentication_status.in_process ||
         this.shared_state.authentication_status.failure ||

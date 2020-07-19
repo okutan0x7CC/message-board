@@ -17,7 +17,7 @@ export const store = {
       can_manage_account: false,
     },
   },
-  async setLoginUser(email, photo_url) {
+  setLoginUser(email, photo_url) {
     const self = this;
     db.ref(`admin_accounts/${email.replace(/\./g, "%2E")}`)
       .once("value")
