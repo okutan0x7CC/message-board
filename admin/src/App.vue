@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { logger } from "./logger/logger.js";
 import { firebase, auth } from "./main.js";
 import { store } from "./store/store.js";
 import TheNavigationBar from "./components/TheNavigationBar.vue";
@@ -51,9 +52,11 @@ export default {
     auth.onAuthStateChanged(user => {
       const is_logged_in = user !== null;
       if (!is_logged_in) {
+        logger.info("onAuthStateChanged", "not logged in");
         self.googleLogin();
         return;
       }
+      logger.info("onAuthStateChanged", "logged in");
       store.setLoginUser(user.email, user.photoURL);
     });
   },
@@ -61,14 +64,27 @@ export default {
     googleLogin: function() {
       let provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope("email");
-      auth.signInWithRedirect(provider).catch(error => {
-        console.log(error);
-      });
+      auth
+        .signInWithRedirect(provider)
+        .then(() => {
+          logger.succeed(self.googleLogin.name);
+        })
+        .catch(reason => {
+          logger.alert(self.googleLogin.name, reason);
+        });
     },
     reLogin: function() {
-      auth.signOut().finally(() => {
-        self.googleLogin();
-      });
+      auth
+        .signOut()
+        .then(() => {
+          logger.succeed("signOut");
+        })
+        .catch(reason => {
+          logger.alert("signOut", reason);
+        })
+        .finally(() => {
+          self.googleLogin();
+        });
     }
   }
 };
