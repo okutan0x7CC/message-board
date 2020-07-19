@@ -1,11 +1,7 @@
 <template>
   <div id="app">
     <i-layout v-if="shouldDisplayAuthProcess">
-      <auth-process
-        :is_authenticating="shared_state.authentication_status.in_process"
-        :is_authentication_failure="shared_state.authentication_status.failure"
-        :can_read_by_login_user="shared_state.login_user.can_read"
-      />
+      <auth-process />
     </i-layout>
     <i-layout v-else>
       <i-layout-header class="_padding-0">
@@ -15,13 +11,7 @@
         <i-container>
           <i-row center-xs>
             <i-column>
-              <router-view
-                :can_read_by_logged_in_user="shared_state.login_user.can_read"
-                :can_write_by_logged_in_user="shared_state.login_user.can_write"
-                :can_manage_account_by_login_user="
-                  shared_state.login_user.can_manage_account
-                "
-              />
+              <router-view />
             </i-column>
           </i-row>
         </i-container>
