@@ -152,6 +152,31 @@ export const store = {
   },
 
   /**
+   * ルームを作成する
+   * @param string public_title
+   * @param string private_title
+   * @param boolean can_read
+   * @param boolean can_write
+   */
+  createRoom(public_title, private_title, can_read, can_write) {
+    db.ref("rooms").push(
+      {
+        public_title: public_title,
+        private_title: private_title,
+        can_read: can_read,
+        can_write: can_write,
+      },
+      (error) => {
+        if (error === null) {
+          logger.succeed("store." + this.createRoom.name);
+        } else {
+          logger.error("store." + this.createRoom.name, error);
+        }
+      }
+    );
+  },
+
+  /**
    * 管理者のメッセージを作成する
    * @param string room_id
    * @param string user_id

@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { db } from "./../main.js";
+import { store } from "./../store/store.js";
 
 export default {
   name: "RoomCreate",
@@ -59,18 +59,13 @@ export default {
   },
   methods: {
     create: function() {
-      const self = this;
-      db.ref("rooms").push(
-        {
-          public_title: this.public_title,
-          private_title: this.private_title,
-          can_read: this.can_read,
-          can_write: this.can_write
-        },
-        () => {
-          self.$router.back();
-        }
+      store.createRoom(
+        this.public_title,
+        this.private_title,
+        this.can_read,
+        this.can_write
       );
+      this.$router.back();
     }
   }
 };
