@@ -39,53 +39,42 @@ export const store = {
         };
         self.state.authentication_status.in_process = false;
         self.state.authentication_status.failure = false;
-        logger.succeed(self.setLoginUser.name);
+        logger.succeed("store." + self.setLoginUser.name);
       })
       .catch((reason) => {
         self.state.authentication_status.in_process = false;
         self.state.authentication_status.failure = true;
-        logger.error(self.setLoginUser.name, reason);
+        logger.error("store." + self.setLoginUser.name, reason);
       });
   },
 
   /**
-   * ルーム一覧を取得する
+   * 全てのルームを取得する
    */
   fetchRooms() {
     const self = this;
     db.ref("rooms")
       .once("value")
       .then((snapshot) => {
-        let rooms = [];
-        let room_ids = [];
-        snapshot.forEach((child) => {
-          room_ids.unshift(child.key);
-          rooms.unshift(child.val());
-        });
-        self.state.rooms = rooms;
-        self.state.room_ids = room_ids;
-        logger.succeed(self.fetchRooms.name);
+        self.state.rooms = Object.assign({}, snapshot.val());
+        logger.succeed("store." + self.fetchRooms.name);
       })
       .catch((reason) => {
-        logger.error(self.fetchRooms.name, reason);
+        logger.error("store." + self.fetchRooms.name, reason);
       });
   },
 
   /**
-   * ルーム一覧の index 要素を DB から削除する
-   * @param int index
+   * 特定ルームを削除する
+   * @param int room_id
    */
-  deleteRoom(index) {
-    const promise_room = db.ref(`rooms/${this.state.room_ids[index]}`).remove();
-    const promise_messages = db
-      .ref(`messages/${this.state.room_ids[index]}`)
-      .remove();
+  deleteRoom(room_id) {
+    const promise_room = db.ref(`rooms/${room_id}`).remove();
+    const promise_messages = db.ref(`messages/${room_id}`).remove();
     const promise_hidden_messages = db
-      .ref(`hidden_messages/${this.state.room_ids[index]}`)
+      .ref(`hidden_messages/${room_id}`)
       .remove();
-    const promise_muted_users = db
-      .ref(`muted_users/${this.state.room_ids[index]}`)
-      .remove();
+    const promise_muted_users = db.ref(`muted_users/${room_id}`).remove();
 
     const self = this;
     Promise.all([
@@ -95,49 +84,50 @@ export const store = {
       promise_muted_users,
     ])
       .then(() => {
-        self.state.room_ids.splice(index, 1);
-        self.state.rooms.splice(index, 1);
-        logger.succeed(self.deleteRooms.name);
+        let deleted_rooms = self.state.rooms;
+        delete deleted_rooms[room_id];
+        self.state.rooms = Object.assign({}, deleted_rooms);
+        logger.succeed("store." + self.deleteRoom.name);
       })
       .catch((reason) => {
-        logger.error(self.deleteRooms.name, reason);
+        logger.error("store." + self.deleteRoom.name, reason);
         return;
       });
   },
 
   /**
-   * ルーム一覧の index 要素における 読み取り許可 を反転させる
+   * 特定ルームの 読み取り許可 を反転させる
    * @param int index
    */
-  toggleRoomCanRead(index) {
-    const next_status = !this.state.rooms[index].can_read;
+  toggleRoomCanRead(room_id) {
+    const next_status = !this.state.rooms[room_id].can_read;
     const self = this;
-    db.ref(`rooms/${this.state.room_ids[index]}/can_read`)
+    db.ref(`rooms/${room_id}/can_read`)
       .set(next_status)
       .then(() => {
-        self.state.rooms[index].can_read = next_status;
-        logger.succeed(self.toggleRoomCanRead.name);
+        self.state.rooms[room_id].can_read = next_status;
+        logger.succeed("store." + self.toggleRoomCanRead.name);
       })
       .catch((reason) => {
-        logger.error(self.toggleRoomCanRead.name, reason);
+        logger.error("store." + self.toggleRoomCanRead.name, reason);
       });
   },
 
   /**
-   * ルーム一覧の index 要素における 書き込み許可 を反転させる
+   * 特定ルームの 書き込み許可 を反転させる
    * @param int index
    */
-  toggleCanWrite: function(index) {
-    const next_status = !this.state.rooms[index].can_write;
+  toggleCanWrite: function(room_id) {
+    const next_status = !this.state.rooms[room_id].can_write;
     const self = this;
-    db.ref(`rooms/${this.state.room_ids[index]}/can_write`)
+    db.ref(`rooms/${room_id}/can_write`)
       .set(next_status)
       .then(() => {
-        self.state.rooms[index].can_write = next_status;
-        logger.succeed(self.toggleCanWrite.name);
+        self.state.rooms[room_id].can_write = next_status;
+        logger.succeed("store." + self.toggleCanWrite.name);
       })
       .catch((reason) => {
-        logger.error(self.toggleCanWrite.name, reason);
+        logger.error("store." + self.toggleCanWrite.name, reason);
       });
   },
 };

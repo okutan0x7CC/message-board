@@ -33,7 +33,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(room_id, index) in shared_state.room_ids" :key="room_id">
+            <tr v-for="(room_id, index) in private_state.room_ids" :key="room_id">
               <th scope="row">
                 <router-link
                   :to="{
@@ -42,23 +42,23 @@
                       room_id: room_id,
                     },
                   }"
-                >{{ shared_state.rooms[index].private_title }}</router-link>
+                >{{ private_state.rooms[index].private_title }}</router-link>
               </th>
               <td>
                 <i-toggle
                   v-if="shared_state.login_user.can_write"
-                  v-model="shared_state.rooms[index].can_read"
+                  v-model="private_state.rooms[index].can_read"
                   v-on:click.native="toggleCanRead(index)"
                 ></i-toggle>
-                <i-toggle v-else v-model="shared_state.rooms[index].can_read" readonly disabled></i-toggle>
+                <i-toggle v-else v-model="private_state.rooms[index].can_read" readonly disabled></i-toggle>
               </td>
               <td>
                 <i-toggle
                   v-if="shared_state.login_user.can_write"
-                  v-model="shared_state.rooms[index].can_write"
+                  v-model="private_state.rooms[index].can_write"
                   v-on:click.native="toggleCanWrite(index)"
                 ></i-toggle>
-                <i-toggle v-else v-model="shared_state.rooms[index].can_write" readonly disabled></i-toggle>
+                <i-toggle v-else v-model="private_state.rooms[index].can_write" readonly disabled></i-toggle>
               </td>
               <td>
                 <i-button
@@ -85,6 +85,7 @@
 </template>
 
 <script>
+import { logger } from "./../logger/logger.js";
 import { store } from "./../store/store.js";
 import PermissionDenied from "./errors/PermissionDenied.vue";
 
@@ -95,21 +96,38 @@ export default {
   },
   data() {
     return {
-      shared_state: store.state
+      shared_state: store.state,
+      private_state: {
+        rooms: [],
+        room_ids: []
+      }
     };
+  },
+  watch: {
+    "shared_state.rooms"(new_rooms) {
+      let rooms_order_by_id_desc = [];
+      let room_ids_order_by_id_desc = [];
+      for (const [room_id, room] of Object.entries(new_rooms)) {
+        rooms_order_by_id_desc.unshift(room);
+        room_ids_order_by_id_desc.unshift(room_id);
+      }
+      this.private_state.rooms = rooms_order_by_id_desc;
+      this.private_state.room_ids = room_ids_order_by_id_desc;
+      logger.info("watch shared_state.rooms");
+    }
   },
   created: function() {
     store.fetchRooms();
   },
   methods: {
     deleteRoom: function(index) {
-      store.deleteRoom(index);
+      store.deleteRoom(this.private_state.room_ids[index]);
     },
     toggleCanRead: function(index) {
-      store.toggleRoomCanRead(index);
+      store.toggleRoomCanRead(this.private_state.room_ids[index]);
     },
     toggleCanWrite: function(index) {
-      store.toggleCanWrite(index);
+      store.toggleCanWrite(this.private_state.room_ids[index]);
     }
   }
 };
