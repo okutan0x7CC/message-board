@@ -19,6 +19,12 @@ export const store = {
     rooms: [],
     room_ids: [],
   },
+
+  /**
+   * 権限を取得しログインユーザーとして設定する
+   * @param string email
+   * @param string photo_url
+   */
   setLoginUser(email, photo_url) {
     const self = this;
     db.ref(`admin_accounts/${email.replace(/\./g, "%2E")}`)
@@ -42,6 +48,10 @@ export const store = {
         logger.error(self.setLoginUser.name, reason);
       });
   },
+
+  /**
+   * 全てのルームを取得する
+   */
   fetchRooms() {
     const self = this;
     db.ref("rooms")
@@ -55,6 +65,40 @@ export const store = {
       })
       .catch((reason) => {
         logger.error(self.fetchRooms.name, reason);
+      });
+  },
+
+  /**
+   * state.rooms の index 要素を DB から削除する
+   * @param int index
+   */
+  deleteRooms(index) {
+    const promise_room = db.ref(`rooms/${this.state.room_ids[index]}`).remove();
+    const promise_messages = db
+      .ref(`messages/${this.state.room_ids[index]}`)
+      .remove();
+    const promise_hidden_messages = db
+      .ref(`hidden_messages/${this.state.room_ids[index]}`)
+      .remove();
+    const promise_muted_users = db
+      .ref(`muted_users/${this.state.room_ids[index]}`)
+      .remove();
+
+    const self = this;
+    Promise.all([
+      promise_room,
+      promise_messages,
+      promise_hidden_messages,
+      promise_muted_users,
+    ])
+      .then(() => {
+        self.state.room_ids.splice(index, 1);
+        self.state.rooms.splice(index, 1);
+        logger.succeed(self.deleteRooms.name);
+      })
+      .catch((reason) => {
+        logger.error(self.deleteRooms.name, reason);
+        return;
       });
   },
 };

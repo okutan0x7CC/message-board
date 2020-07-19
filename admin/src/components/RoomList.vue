@@ -106,34 +106,7 @@ export default {
   },
   methods: {
     deleteRoom: function(index) {
-      const promise_room = db
-        .ref(`rooms/${this.shared_state.room_ids[index]}`)
-        .remove();
-      const promise_messages = db
-        .ref(`messages/${this.shared_state.room_ids[index]}`)
-        .remove();
-      const promise_hidden_messages = db
-        .ref(`hidden_messages/${this.shared_state.room_ids[index]}`)
-        .remove();
-      const promise_muted_users = db
-        .ref(`muted_users/${this.shared_state.room_ids[index]}`)
-        .remove();
-
-      const self = this;
-      Promise.all([
-        promise_room,
-        promise_messages,
-        promise_hidden_messages,
-        promise_muted_users
-      ])
-        .then(() => {
-          self.shared_state.room_ids.splice(index, 1);
-          self.rooms.splice(index, 1);
-        })
-        .catch(() => {
-          // TODO: alert
-          return;
-        });
+      store.deleteRooms(index);
     },
     toggleCanRead: function(index) {
       const next_status = !this.rooms[index].can_read;
