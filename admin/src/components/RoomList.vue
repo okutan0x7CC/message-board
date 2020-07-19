@@ -29,7 +29,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(room_id, index) in room_ids" :key="room_id">
+            <tr v-for="(room_id, index) in shared_state.room_ids" :key="room_id">
               <th scope="row">
                 <router-link
                   :to="{
@@ -40,23 +40,23 @@
                       can_write_by_logged_in_user: can_write_by_logged_in_user
                     },
                   }"
-                >{{ rooms[index].private_title }}</router-link>
+                >{{ shared_state.rooms[index].private_title }}</router-link>
               </th>
               <td>
                 <i-toggle
                   v-if="can_write_by_logged_in_user"
-                  v-model="rooms[index].can_read"
+                  v-model="shared_state.rooms[index].can_read"
                   v-on:click.native="toggleCanRead(index)"
                 ></i-toggle>
-                <i-toggle v-else v-model="rooms[index].can_read" readonly disabled></i-toggle>
+                <i-toggle v-else v-model="shared_state.rooms[index].can_read" readonly disabled></i-toggle>
               </td>
               <td>
                 <i-toggle
                   v-if="can_write_by_logged_in_user"
-                  v-model="rooms[index].can_write"
+                  v-model="shared_state.rooms[index].can_write"
                   v-on:click.native="toggleCanWrite(index)"
                 ></i-toggle>
-                <i-toggle v-else v-model="rooms[index].can_write" readonly disabled></i-toggle>
+                <i-toggle v-else v-model="shared_state.rooms[index].can_write" readonly disabled></i-toggle>
               </td>
               <td>
                 <i-button
@@ -84,6 +84,7 @@
 
 <script>
 import { db } from "./../main.js";
+import { store } from "./../store/store.js";
 import PermissionDenied from "./errors/PermissionDenied.vue";
 
 export default {
@@ -97,32 +98,25 @@ export default {
   },
   data() {
     return {
-      room_ids: [],
-      rooms: []
+      shared_state: store.state
     };
   },
   created: function() {
-    const self = this;
-    db.ref("rooms")
-      .once("value")
-      .then(snapshot => {
-        snapshot.forEach(child => {
-          self.room_ids.unshift(child.key);
-          self.rooms.unshift(child.val());
-        });
-      });
+    store.fetchRooms();
   },
   methods: {
     deleteRoom: function(index) {
-      const promise_room = db.ref(`rooms/${this.room_ids[index]}`).remove();
+      const promise_room = db
+        .ref(`rooms/${this.shared_state.room_ids[index]}`)
+        .remove();
       const promise_messages = db
-        .ref(`messages/${this.room_ids[index]}`)
+        .ref(`messages/${this.shared_state.room_ids[index]}`)
         .remove();
       const promise_hidden_messages = db
-        .ref(`hidden_messages/${this.room_ids[index]}`)
+        .ref(`hidden_messages/${this.shared_state.room_ids[index]}`)
         .remove();
       const promise_muted_users = db
-        .ref(`muted_users/${this.room_ids[index]}`)
+        .ref(`muted_users/${this.shared_state.room_ids[index]}`)
         .remove();
 
       const self = this;
@@ -133,7 +127,7 @@ export default {
         promise_muted_users
       ])
         .then(() => {
-          self.room_ids.splice(index, 1);
+          self.shared_state.room_ids.splice(index, 1);
           self.rooms.splice(index, 1);
         })
         .catch(() => {
@@ -144,7 +138,7 @@ export default {
     toggleCanRead: function(index) {
       const next_status = !this.rooms[index].can_read;
       const self = this;
-      db.ref(`rooms/${this.room_ids[index]}/can_read`)
+      db.ref(`rooms/${this.shared_state.room_ids[index]}/can_read`)
         .set(next_status)
         .then(() => {
           self.rooms[index].can_read = next_status;
@@ -156,7 +150,7 @@ export default {
     toggleCanWrite: function(index) {
       const next_status = !this.rooms[index].can_write;
       const self = this;
-      db.ref(`rooms/${this.room_ids[index]}/can_write`)
+      db.ref(`rooms/${this.shared_state.room_ids[index]}/can_write`)
         .set(next_status)
         .then(() => {
           self.rooms[index].can_write = next_status;

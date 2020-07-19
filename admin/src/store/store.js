@@ -16,6 +16,8 @@ export const store = {
       can_write: false,
       can_manage_account: false,
     },
+    rooms: [],
+    room_ids: [],
   },
   setLoginUser(email, photo_url) {
     const self = this;
@@ -38,6 +40,21 @@ export const store = {
         self.state.authentication_status.in_process = false;
         self.state.authentication_status.failure = true;
         logger.error(self.setLoginUser.name, reason);
+      });
+  },
+  fetchRooms() {
+    const self = this;
+    db.ref("rooms")
+      .once("value")
+      .then((snapshot) => {
+        snapshot.forEach((child) => {
+          self.state.room_ids.unshift(child.key);
+          self.state.rooms.unshift(child.val());
+          logger.succeed(self.fetchRooms.name);
+        });
+      })
+      .catch((reason) => {
+        logger.error(self.fetchRooms.name, reason);
       });
   },
 };
