@@ -50,7 +50,7 @@ export const store = {
   },
 
   /**
-   * 全てのルームを取得する
+   * ルーム一覧を取得する
    */
   fetchRooms() {
     const self = this;
@@ -69,7 +69,7 @@ export const store = {
   },
 
   /**
-   * state.rooms の index 要素を DB から削除する
+   * ルーム一覧の index 要素を DB から削除する
    * @param int index
    */
   deleteRooms(index) {
@@ -99,6 +99,42 @@ export const store = {
       .catch((reason) => {
         logger.error(self.deleteRooms.name, reason);
         return;
+      });
+  },
+
+  /**
+   * ルーム一覧の index 要素における 読み取り許可 を反転させる
+   * @param int index
+   */
+  toggleRoomCanRead(index) {
+    const next_status = !this.state.rooms[index].can_read;
+    const self = this;
+    db.ref(`rooms/${this.state.room_ids[index]}/can_read`)
+      .set(next_status)
+      .then(() => {
+        self.state.rooms[index].can_read = next_status;
+        logger.succeed(self.toggleRoomCanRead.name);
+      })
+      .catch((reason) => {
+        logger.error(self.toggleRoomCanRead.name, reason);
+      });
+  },
+
+  /**
+   * ルーム一覧の index 要素における 書き込み許可 を反転させる
+   * @param int index
+   */
+  toggleCanWrite: function(index) {
+    const next_status = !this.state.rooms[index].can_write;
+    const self = this;
+    db.ref(`rooms/${this.state.room_ids[index]}/can_write`)
+      .set(next_status)
+      .then(() => {
+        self.state.rooms[index].can_write = next_status;
+        logger.succeed(self.toggleCanWrite.name);
+      })
+      .catch((reason) => {
+        logger.error(self.toggleCanWrite.name, reason);
       });
   },
 };

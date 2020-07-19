@@ -83,7 +83,6 @@
 </template>
 
 <script>
-import { db } from "./../main.js";
 import { store } from "./../store/store.js";
 import PermissionDenied from "./errors/PermissionDenied.vue";
 
@@ -109,28 +108,10 @@ export default {
       store.deleteRooms(index);
     },
     toggleCanRead: function(index) {
-      const next_status = !this.rooms[index].can_read;
-      const self = this;
-      db.ref(`rooms/${this.shared_state.room_ids[index]}/can_read`)
-        .set(next_status)
-        .then(() => {
-          self.rooms[index].can_read = next_status;
-        })
-        .catch(() => {
-          // TODO: alert
-        });
+      store.toggleRoomCanRead(index);
     },
     toggleCanWrite: function(index) {
-      const next_status = !this.rooms[index].can_write;
-      const self = this;
-      db.ref(`rooms/${this.shared_state.room_ids[index]}/can_write`)
-        .set(next_status)
-        .then(() => {
-          self.rooms[index].can_write = next_status;
-        })
-        .catch(() => {
-          // TODO: alert
-        });
+      store.toggleCanWrite(index);
     }
   }
 };
