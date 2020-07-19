@@ -57,11 +57,15 @@ export const store = {
     db.ref("rooms")
       .once("value")
       .then((snapshot) => {
+        let rooms = [];
+        let room_ids = [];
         snapshot.forEach((child) => {
-          self.state.room_ids.unshift(child.key);
-          self.state.rooms.unshift(child.val());
-          logger.succeed(self.fetchRooms.name);
+          room_ids.unshift(child.key);
+          rooms.unshift(child.val());
         });
+        self.state.rooms = rooms;
+        self.state.room_ids = room_ids;
+        logger.succeed(self.fetchRooms.name);
       })
       .catch((reason) => {
         logger.error(self.fetchRooms.name, reason);
@@ -72,7 +76,7 @@ export const store = {
    * ルーム一覧の index 要素を DB から削除する
    * @param int index
    */
-  deleteRooms(index) {
+  deleteRoom(index) {
     const promise_room = db.ref(`rooms/${this.state.room_ids[index]}`).remove();
     const promise_messages = db
       .ref(`messages/${this.state.room_ids[index]}`)

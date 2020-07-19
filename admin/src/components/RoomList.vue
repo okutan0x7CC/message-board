@@ -1,5 +1,5 @@
 <template>
-  <i-container v-if="can_read_by_logged_in_user">
+  <i-container v-if="shared_state.login_user.can_read">
     <i-row>
       <i-column>
         <i-breadcrumb class="_padding-left-2 _padding-top-2">
@@ -9,7 +9,11 @@
     </i-row>
     <i-row end-xs class="_padding-1">
       <i-column>
-        <i-button v-if="can_write_by_logged_in_user" variant="primary" :to="{ name: 'RoomCreate' }">
+        <i-button
+          v-if="shared_state.login_user.can_write"
+          variant="primary"
+          :to="{ name: 'RoomCreate' }"
+        >
           <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Room
         </i-button>
         <i-button v-else variant="primary" disabled readonly>
@@ -36,15 +40,13 @@
                     name: 'RoomDetail',
                     params: { 
                       room_id: room_id,
-                      can_read_by_logged_in_user: can_read_by_logged_in_user,
-                      can_write_by_logged_in_user: can_write_by_logged_in_user
                     },
                   }"
                 >{{ shared_state.rooms[index].private_title }}</router-link>
               </th>
               <td>
                 <i-toggle
-                  v-if="can_write_by_logged_in_user"
+                  v-if="shared_state.login_user.can_write"
                   v-model="shared_state.rooms[index].can_read"
                   v-on:click.native="toggleCanRead(index)"
                 ></i-toggle>
@@ -52,7 +54,7 @@
               </td>
               <td>
                 <i-toggle
-                  v-if="can_write_by_logged_in_user"
+                  v-if="shared_state.login_user.can_write"
                   v-model="shared_state.rooms[index].can_write"
                   v-on:click.native="toggleCanWrite(index)"
                 ></i-toggle>
@@ -60,7 +62,7 @@
               </td>
               <td>
                 <i-button
-                  v-if="can_write_by_logged_in_user"
+                  v-if="shared_state.login_user.can_write"
                   v-on:click="deleteRoom(index)"
                   class="_padding-0"
                   link
@@ -91,10 +93,6 @@ export default {
   components: {
     PermissionDenied
   },
-  props: {
-    can_read_by_logged_in_user: Boolean,
-    can_write_by_logged_in_user: Boolean
-  },
   data() {
     return {
       shared_state: store.state
@@ -105,7 +103,7 @@ export default {
   },
   methods: {
     deleteRoom: function(index) {
-      store.deleteRooms(index);
+      store.deleteRoom(index);
     },
     toggleCanRead: function(index) {
       store.toggleRoomCanRead(index);
