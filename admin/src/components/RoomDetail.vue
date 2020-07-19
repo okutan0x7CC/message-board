@@ -8,22 +8,6 @@
         </i-breadcrumb>
       </i-column>
     </i-row>
-    <i-row end-xs class="_padding-1">
-      <i-column>
-        <i-button
-          v-if="shared_state.login_user.can_write"
-          variant="primary"
-          :to="{ 
-              name: 'RoomMessageCreate',
-          }"
-        >
-          <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Message
-        </i-button>
-        <i-button v-else variant="primary" disabled readonly>
-          <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Message
-        </i-button>
-      </i-column>
-    </i-row>
     <i-row start-xs>
       <i-column>
         <i-tabs>
