@@ -18,11 +18,10 @@
       <i-row class="_padding-1">
         <i-column>
           <i-datatable
-            :columns="columns"
-            :rows="rows"
+            :columns="private_state.columns"
+            :rows="private_state.rows"
             :footer="false"
             :responsive="true"
-            :striped="true"
             :hover="true"
           />
         </i-column>
@@ -38,6 +37,7 @@
 import { store } from "./../store/store.js";
 import PermissionDenied from "./errors/PermissionDenied.vue";
 import RoomMessageRow from "./RoomMessageRow.vue";
+import { logger } from "../logger/logger";
 
 export default {
   name: "RoomMessageList",
@@ -50,44 +50,68 @@ export default {
   data() {
     return {
       shared_state: store.state,
-      columns: [
-        {
-          title: "timestamp",
-          path: "timestamp",
-          component: RoomMessageRow
-        },
-        {
-          title: "text",
-          path: "text"
-        },
-        {
-          title: "nickname",
-          path: "nickname",
-          component: RoomMessageRow
-        },
-        {
-          title: "user id",
-          path: "user_id",
-          component: RoomMessageRow
-        },
-        {
-          title: "reactions",
-          path: "reactions",
-          component: RoomMessageRow
-        },
-        {
-          title: "is hidden",
-          path: "is_hidden",
-          component: RoomMessageRow
-        },
-        {
-          title: "is user muted",
-          path: "is_user_muted",
-          component: RoomMessageRow
-        }
-      ],
-      rows: []
+      private_state: {
+        columns: [
+          {
+            title: "timestamp",
+            path: "timestamp",
+            component: RoomMessageRow
+          },
+          {
+            title: "text",
+            path: "text"
+          },
+          {
+            title: "nickname",
+            path: "nickname",
+            component: RoomMessageRow
+          },
+          {
+            title: "user id",
+            path: "user_id",
+            component: RoomMessageRow
+          },
+          {
+            title: "reactions",
+            path: "reactions",
+            component: RoomMessageRow
+          },
+          {
+            title: "is hidden",
+            path: "is_hidden",
+            component: RoomMessageRow
+          },
+          {
+            title: "is user muted",
+            path: "is_user_muted",
+            component: RoomMessageRow
+          }
+        ],
+        rows: []
+      }
     };
+  },
+  watch: {
+    "shared_state.room_messages"(new_messages) {
+      let rows = [];
+      for (const [message_id, message] of Object.entries(new_messages)) {
+        rows.unshift({
+          id: message_id,
+          timestamp: message.timestamp,
+          text: message.text,
+          nickname: message.nickname,
+          user_id: message.user_id,
+          reactions: {},
+          is_hidden: false,
+          is_user_muted: false
+        });
+      }
+      this.private_state.rows = rows;
+      logger.info("watch shared_state.room_messages");
+    }
+  },
+  created() {
+    store.listenRoomMessages(this.room_id);
   }
   // methods: {
   //   toggleHidden: function(index) {

@@ -1,8 +1,8 @@
 "use strict";
 
-import { db } from "./../main.js";
 import { logger } from "./../logger/logger.js";
-import { database } from "firebase";
+import { database } from "firebase/app";
+import { db } from "./../main.js";
 
 export const store = {
   state: {
@@ -18,6 +18,7 @@ export const store = {
       can_manage_account: false,
     },
     rooms: {},
+    room_messages: {},
   },
 
   /**
@@ -199,5 +200,18 @@ export const store = {
         }
       }
     );
+  },
+
+  /**
+   * 特定のルームにおけるメッセージの追加を監視する
+   * @param string room_id
+   */
+  listenRoomMessages(room_id) {
+    const self = this;
+    db.ref(`messages/${room_id}`).on("child_added", (snapshot) => {
+      self.state.room_messages[snapshot.key] = snapshot.val();
+      self.state.room_messages = Object.assign({}, self.state.room_messages);
+      logger.info("store." + self.listenRoomMessages.name, "child_added");
+    });
   },
 };

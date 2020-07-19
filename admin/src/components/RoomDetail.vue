@@ -12,7 +12,7 @@
       <i-column>
         <i-tabs>
           <i-tab title="Messages" class="_background-transparent">
-            <room-message-list />
+            <room-message-list :room_id="room_id" />
           </i-tab>
           <i-tab title="Posted Users" class="_background-transparent"></i-tab>
         </i-tabs>
