@@ -36,7 +36,7 @@
         </i-row>
         <i-row end-xs class="_margin-bottom-2">
           <i-column>
-            <i-button v-on:click="createRoom()" variant="success">create</i-button>
+            <i-button v-on:click="create()" variant="success">create</i-button>
           </i-column>
         </i-row>
       </i-column>
@@ -58,7 +58,7 @@ export default {
     };
   },
   methods: {
-    createRoom: function() {
+    create: function() {
       const self = this;
       db.ref("rooms").push(
         {

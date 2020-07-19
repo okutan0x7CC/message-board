@@ -23,7 +23,7 @@ export default {
     };
   },
   created: function() {
-    store.fetchRooms();
+    store.fetchRoom(this.roomId);
     const self = this;
     db.ref(`messages/${this.roomId}`).on("child_added", snapshot => {
       self.message_ids.unshift(snapshot.key);

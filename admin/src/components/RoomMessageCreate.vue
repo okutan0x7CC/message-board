@@ -1,12 +1,12 @@
 <template>
-  <i-container v-if="can_write_by_logged_in_user">
+  <i-container v-if="shared_state.login_user.can_write">
     <i-row>
       <i-column>
         <i-breadcrumb class="_padding-left-2 _padding-top-2">
           <i-breadcrumb-item :to="{ name: 'RoomList' }">Rooms</i-breadcrumb-item>
           <i-breadcrumb-item
             :to="{ 
-              name: 'Room',
+              name: 'RoomDetail',
               params: { 
                 room_id: room_id
               }
@@ -16,19 +16,31 @@
         </i-breadcrumb>
       </i-column>
     </i-row>
-    <div>
-      <div>
-        <label for="message-nickname">nickname:</label>
-        <input v-model="nickname" id="message-nickname" type="text" />
-      </div>
-      <div>
-        <label for="message-text">text:</label>
-        <input v-model="text" id="message-text" type="text" />
-      </div>
-      <div>
-        <button v-on:click="create()">create</button>
-      </div>
-    </div>
+    <i-row class="_margin-top-1" center-xs>
+      <i-column lg="6" md="9" xs="12">
+        <i-row start-xs class="_margin-bottom-2">
+          <i-column>
+            <i-form-group>
+              <i-form-label>nickname</i-form-label>
+              <i-input v-model="nickname" placeholder="ex. admin" />
+            </i-form-group>
+          </i-column>
+        </i-row>
+        <i-row start-xs class="_margin-bottom-2">
+          <i-column>
+            <i-form-group>
+              <i-form-label>text</i-form-label>
+              <i-input v-model="text" placeholder="hello world" />
+            </i-form-group>
+          </i-column>
+        </i-row>
+        <i-row end-xs class="_margin-bottom-2">
+          <i-column>
+            <i-button v-on:click="create()" variant="success">create</i-button>
+          </i-column>
+        </i-row>
+      </i-column>
+    </i-row>
   </i-container>
   <i-container v-else>
     <permission-denied />
@@ -36,18 +48,38 @@
 </template>
 
 <script>
+import { store } from "./../store/store.js";
+
+const ADMIN_USER_ID = "admin";
+const DEFAULT_ADMIN_USER_NICKNAME = "Admin";
+
 export default {
   name: "RoomMessageCreate",
   props: {
-    can_write_by_logged_in_user: Boolean,
-    room_id: String,
-    room: Object
+    room_id: String
   },
   data() {
     return {
+      shared_state: store.state,
       text: "",
-      nickname: ""
+      nickname: DEFAULT_ADMIN_USER_NICKNAME
     };
+  },
+  computed: {
+    room() {
+      return this.shared_state.rooms[this.room_id] ?? {};
+    }
+  },
+  methods: {
+    create() {
+      store.createAdminMessage(
+        this.room_id,
+        ADMIN_USER_ID,
+        this.text,
+        this.nickname
+      );
+      this.$router.back();
+    }
   }
 };
 </script>

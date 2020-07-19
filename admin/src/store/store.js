@@ -2,6 +2,7 @@
 
 import { db } from "./../main.js";
 import { logger } from "./../logger/logger.js";
+import { database } from "firebase";
 
 export const store = {
   state: {
@@ -65,6 +66,25 @@ export const store = {
   },
 
   /**
+   * 特定のルームを取得する
+   * @param string room_id
+   */
+  fetchRoom(room_id) {
+    const self = this;
+    db.ref(`rooms/${room_id}`)
+      .once("value")
+      .then((snapshot) => {
+        let new_rooms = this.state.rooms;
+        new_rooms[room_id] = snapshot.val();
+        self.state.rooms = Object.assign({}, new_rooms);
+        logger.succeed("store." + self.fetchRoom.name);
+      })
+      .catch((reason) => {
+        logger.error("store." + self.fetchRoom.name, reason);
+      });
+  },
+
+  /**
    * 特定ルームを削除する
    * @param int room_id
    */
@@ -117,7 +137,7 @@ export const store = {
    * 特定ルームの 書き込み許可 を反転させる
    * @param int index
    */
-  toggleCanWrite: function(room_id) {
+  toggleCanWrite(room_id) {
     const next_status = !this.state.rooms[room_id].can_write;
     const self = this;
     db.ref(`rooms/${room_id}/can_write`)
@@ -129,5 +149,30 @@ export const store = {
       .catch((reason) => {
         logger.error("store." + self.toggleCanWrite.name, reason);
       });
+  },
+
+  /**
+   * 管理者のメッセージを作成する
+   * @param string room_id
+   * @param string user_id
+   * @param string text
+   * @param string nickname
+   */
+  createAdminMessage(room_id, user_id, text, nickname) {
+    db.ref(`messages/${room_id}`).push(
+      {
+        user_id: user_id,
+        text: text,
+        timestamp: database.ServerValue.TIMESTAMP,
+        nickname: nickname,
+      },
+      (error) => {
+        if (error === null) {
+          logger.succeed("store." + this.createAdminMessage.name);
+        } else {
+          logger.error("store." + this.createAdminMessage.name, error);
+        }
+      }
+    );
   },
 };
