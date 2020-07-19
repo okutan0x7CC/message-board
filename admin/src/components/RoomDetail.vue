@@ -1,5 +1,5 @@
 <template>
-  <i-container v-if="can_read_by_logged_in_user">
+  <i-container v-if="shared_state.login_user.can_read">
     <i-row>
       <i-column>
         <i-breadcrumb class="_padding-left-2 _padding-top-2">
@@ -11,7 +11,7 @@
     <i-row end-xs class="_padding-1">
       <i-column>
         <i-button
-          v-if="can_write_by_logged_in_user"
+          v-if="shared_state.login_user.can_write"
           variant="primary"
           :to="{ 
               name: 'RoomMessageCreate',
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import { store } from "./../store/store.js";
 import RoomMessageList from "./RoomMessageList.vue";
 
 export default {
@@ -49,15 +50,17 @@ export default {
     RoomMessageList
   },
   props: {
-    can_read_by_logged_in_user: Boolean,
-    can_write_by_logged_in_user: Boolean,
-    room_id: String,
-    room: Object,
-    message_ids: Array,
-    messages: Array,
-    hidden_messages: Object,
-    muted_users: Object,
-    reactions: Object
+    room_id: String
+  },
+  data() {
+    return {
+      shared_state: store.state
+    };
+  },
+  computed: {
+    room() {
+      return this.shared_state.rooms[this.room_id] ?? {};
+    }
   }
 };
 </script>

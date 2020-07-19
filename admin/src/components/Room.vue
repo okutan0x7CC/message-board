@@ -1,26 +1,13 @@
 <template>
-  <router-view
-    :can_read_by_logged_in_user="can_read_by_logged_in_user"
-    :can_write_by_logged_in_user="can_write_by_logged_in_user"
-    :room_id="roomId"
-    :room="room"
-    :message_ids="message_ids"
-    :messages="messages"
-    :hidden_messages="hidden_messages"
-    :muted_users="muted_users"
-    :reactions="reactions"
-  />
+  <router-view :room_id="roomId" />
 </template>
 
 <script>
+import { store } from "./../store/store.js";
 import { db } from "./../main.js";
 
 export default {
   name: "Room",
-  props: {
-    can_read_by_logged_in_user: Boolean,
-    can_write_by_logged_in_user: Boolean
-  },
   computed: {
     roomId() {
       return this.$route.params.room_id;
@@ -28,7 +15,6 @@ export default {
   },
   data() {
     return {
-      room: {},
       message_ids: [],
       messages: [],
       hidden_messages: {},
@@ -37,12 +23,8 @@ export default {
     };
   },
   created: function() {
+    store.fetchRooms();
     const self = this;
-    db.ref(`rooms/${this.roomId}`)
-      .once("value")
-      .then(snapshot => {
-        self.room = snapshot.val();
-      });
     db.ref(`messages/${this.roomId}`).on("child_added", snapshot => {
       self.message_ids.unshift(snapshot.key);
       self.messages.unshift(snapshot.val());
