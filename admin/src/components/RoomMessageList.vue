@@ -23,6 +23,7 @@
             :footer="false"
             :responsive="true"
             :hover="true"
+            :filtering="private_state.filtering"
           />
         </i-column>
       </i-row>
@@ -34,6 +35,7 @@
 </template>
 
 <script>
+import moment from "moment-timezone";
 import { store } from "./../store/store.js";
 import PermissionDenied from "./errors/PermissionDenied.vue";
 import RoomMessageRow from "./RoomMessageRow.vue";
@@ -54,8 +56,7 @@ export default {
         columns: [
           {
             title: "timestamp",
-            path: "timestamp",
-            component: RoomMessageRow
+            path: "timestamp"
           },
           {
             title: "text",
@@ -63,13 +64,11 @@ export default {
           },
           {
             title: "nickname",
-            path: "nickname",
-            component: RoomMessageRow
+            path: "nickname"
           },
           {
             title: "user id",
-            path: "user_id",
-            component: RoomMessageRow
+            path: "user_id"
           },
           {
             title: "reactions",
@@ -87,7 +86,12 @@ export default {
             component: RoomMessageRow
           }
         ],
-        rows: []
+        rows: [],
+        filtering: {
+          fuse: {
+            keys: ["text", "nickname", "user_id"]
+          }
+        }
       }
     };
   },
@@ -95,9 +99,11 @@ export default {
     "shared_state.room_messages"(new_messages) {
       let rows = [];
       for (const [message_id, message] of Object.entries(new_messages)) {
+        console.log(message);
+
         rows.unshift({
           id: message_id,
-          timestamp: message.timestamp,
+          timestamp: this.formatTimestamp(message.timestamp),
           text: message.text,
           nickname: message.nickname,
           user_id: message.user_id,
@@ -110,8 +116,18 @@ export default {
       logger.info("watch shared_state.room_messages");
     }
   },
+  methods: {
+    formatTimestamp(timestamp) {
+      return moment(timestamp)
+        .tz("Asia/Tokyo")
+        .format("YYYY-MM-DD HH:mm:ss");
+    }
+  },
   created() {
     store.listenRoomMessages(this.room_id);
+  },
+  beforeDestroy() {
+    store.detachRoomMessages(this.room_id);
   }
   // methods: {
   //   toggleHidden: function(index) {

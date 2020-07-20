@@ -207,11 +207,20 @@ export const store = {
    * @param string room_id
    */
   listenRoomMessages(room_id) {
+    this.state.room_messages = {};
     const self = this;
     db.ref(`messages/${room_id}`).on("child_added", (snapshot) => {
       self.state.room_messages[snapshot.key] = snapshot.val();
       self.state.room_messages = Object.assign({}, self.state.room_messages);
       logger.info("store." + self.listenRoomMessages.name, "child_added");
     });
+  },
+
+  /**
+   * 特定ルームにおける全ての監視を削除する
+   * @param string room_id
+   */
+  detachRoomMessages(room_id) {
+    db.ref(`messages/${room_id}`).off();
   },
 };
