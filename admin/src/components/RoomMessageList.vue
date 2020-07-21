@@ -8,10 +8,10 @@
             variant="primary"
             :to="{ name: 'RoomMessageCreate' }"
           >
-            <i-icon></i-icon>Create Message
+            <i-icon icon="plus" class="_padding-right-1"></i-icon>Message
           </i-button>
           <i-button v-else variant="primary" disabled readonly>
-            <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Message
+            <i-icon icon="plus" class="_padding-right-1"></i-icon>Message
           </i-button>
         </i-column>
       </i-row>
@@ -36,6 +36,7 @@
 
 <script>
 import moment from "moment-timezone";
+import { db } from "./../main.js";
 import { store } from "./../store/store.js";
 import PermissionDenied from "./errors/PermissionDenied.vue";
 import RoomMessageRow from "./RoomMessageRow.vue";
@@ -95,39 +96,40 @@ export default {
       }
     };
   },
-  watch: {
-    "shared_state.room_messages"(new_messages) {
-      let rows = [];
-      for (const [message_id, message] of Object.entries(new_messages)) {
-        console.log(message);
-
-        rows.unshift({
-          id: message_id,
-          timestamp: this.formatTimestamp(message.timestamp),
-          text: message.text,
-          nickname: message.nickname,
-          user_id: message.user_id,
-          reactions: {},
-          is_hidden: false,
-          is_user_muted: false
-        });
-      }
-      this.private_state.rows = rows;
-      logger.info("watch shared_state.room_messages");
-    }
+  created() {
+    this.listenRoomMessages();
+  },
+  beforeDestroy() {
+    this.detachRoomMessages();
   },
   methods: {
     formatTimestamp(timestamp) {
       return moment(timestamp)
         .tz("Asia/Tokyo")
         .format("YYYY-MM-DD HH:mm:ss");
+    },
+    listenRoomMessages() {
+      const self = this;
+      db.ref(`messages/${this.room_id}`).on("child_added", snapshot => {
+        const message_id = snapshot.key;
+        const message = snapshot.val();
+        self.private_state.rows.unshift({
+          id: message_id,
+          timestamp: self.formatTimestamp(message.timestamp),
+          text: message.text,
+          nickname: message.nickname,
+          user_id: message.user_id,
+          reactions: 0,
+          is_hidden: false,
+          is_user_muted: false
+        });
+        logger.info("listenRoomMessages", "child_added");
+      });
+    },
+    detachRoomMessages() {
+      db.ref(`messages/${this.room_id}`).off();
+      logger.info("detachRoomMessages", "detached");
     }
-  },
-  created() {
-    store.listenRoomMessages(this.room_id);
-  },
-  beforeDestroy() {
-    store.detachRoomMessages(this.room_id);
   }
   // methods: {
   //   toggleHidden: function(index) {

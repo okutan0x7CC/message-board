@@ -14,10 +14,10 @@
           variant="primary"
           :to="{ name: 'RoomCreate' }"
         >
-          <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Room
+          <i-icon icon="plus" class="_padding-right-1"></i-icon>Room
         </i-button>
         <i-button v-else variant="primary" disabled readonly>
-          <i-icon icon="plus" class="_padding-right-1"></i-icon>Create Room
+          <i-icon icon="plus" class="_padding-right-1"></i-icon>Room
         </i-button>
       </i-column>
     </i-row>
