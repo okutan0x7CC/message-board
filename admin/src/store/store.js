@@ -19,6 +19,12 @@ export const store = {
     },
     rtdb: {
       rooms: {},
+      room: {
+        messages: {},
+        hidden_messages: {},
+        muted_users: {},
+        reactions: {},
+      },
     },
   },
 
@@ -201,5 +207,30 @@ export const store = {
         }
       }
     );
+  },
+
+  listenRoom(room_id) {
+    const self = this;
+    db.ref(`messages/${room_id}`).on("child_added", (snapshot) => {
+      self.state.rtdb.room.messages[snapshot.key] = snapshot.val();
+    });
+    db.ref(`hidden_messages/${room_id}`).on("child_added", (snapshot) => {
+      self.state.rtdb.room.hidden_messages[snapshot.key] = snapshot.val();
+    });
+    db.ref(`hidden_messages/${room_id}`).on("child_removed", (snapshot) => {
+      delete self.state.rtdb.room.hidden_messages[snapshot.key];
+    });
+    db.ref(`muted_users/${room_id}`).on("child_added", (snapshot) => {
+      self.state.rtdb.room.muted_users[snapshot.key] = snapshot.val();
+    });
+    db.ref(`muted_users/${room_id}`).on("child_removed", (snapshot) => {
+      delete self.state.rtdb.room.muted_users[snapshot.key];
+    });
+    db.ref(`reactions/${room_id}`).on("child_added", (snapshot) => {
+      self.state.rtdb.room.reactions[snapshot.key] = snapshot.val();
+    });
+    db.ref(`reactions/${room_id}`).on("child_removed", (snapshot) => {
+      delete self.state.rtdb.room.reactions[snapshot.key];
+    });
   },
 };
