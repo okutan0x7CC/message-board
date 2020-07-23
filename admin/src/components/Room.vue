@@ -16,6 +16,9 @@ export default {
     store.fetchRoom(this.roomId);
     store.listenRoom(this.roomId);
   },
+  beforeDestroy() {
+    store.detachRoom(this.roomId);
+  },
 };
 </script>
 

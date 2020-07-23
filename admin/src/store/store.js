@@ -215,7 +215,18 @@ export const store = {
     );
   },
 
+  /**
+   * 特定ルームの状態を監視する
+   * @param string room_id
+   */
   listenRoom(room_id) {
+    this.state.rtdb.room = {
+      messages: {},
+      hidden_messages: {},
+      muted_users: {},
+      reactions: {},
+    };
+    this.state.components.room_message_list.rows = [];
     const self = this;
     db.ref(`messages/${room_id}`).on("child_added", (snapshot) => {
       self.state.rtdb.room.messages[snapshot.key] = snapshot.val();
@@ -240,6 +251,18 @@ export const store = {
     db.ref(`reactions/${room_id}`).on("child_removed", (snapshot) => {
       delete self.state.rtdb.room.reactions[snapshot.key];
     });
+  },
+
+  /**
+   * 特定ルームの状態監視を解除する
+   * @param stirng room_id
+   */
+  detachRoom(room_id) {
+    db.ref(`messages/${room_id}`).off();
+    db.ref(`hidden_messages/${room_id}`).off();
+    db.ref(`muted_users/${room_id}`).off();
+    db.ref(`reactions/${room_id}`).off;
+    logger.info("store.detachRoom");
   },
 
   _appendRoomMessageListRow(message_id, message) {
