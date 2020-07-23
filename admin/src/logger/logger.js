@@ -5,8 +5,9 @@ export const logger = {
   log(type, title, anything = "", background = "black", color = "white") {
     if (!this.is_production) {
       console.log(
-        `%c ${type} ` + `%c${title}\n${anything}`,
-        `background: ${background}; color: ${color};`
+        `%c ${type} ` + `%c ${title}\n${anything}`,
+        `background: ${background}; color: ${color};`,
+        `background: none; color: none;`
       );
     }
   },
