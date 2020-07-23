@@ -14,6 +14,7 @@ export default {
   },
   created: function () {
     store.fetchRoom(this.roomId);
+    store.listenRoom(this.roomId);
   },
 };
 </script>
