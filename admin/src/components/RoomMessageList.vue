@@ -45,10 +45,10 @@ import { logger } from "../logger/logger";
 export default {
   name: "RoomMessageList",
   components: {
-    PermissionDenied
+    PermissionDenied,
   },
   props: {
-    room_id: String
+    room_id: String,
   },
   data() {
     return {
@@ -57,43 +57,43 @@ export default {
         columns: [
           {
             title: "timestamp",
-            path: "timestamp"
+            path: "timestamp",
           },
           {
             title: "text",
-            path: "text"
+            path: "text",
           },
           {
             title: "nickname",
-            path: "nickname"
+            path: "nickname",
           },
           {
             title: "user id",
-            path: "user_id"
+            path: "user_id",
           },
           {
             title: "reactions",
             path: "reactions",
-            component: RoomMessageRow
+            component: RoomMessageRow,
           },
           {
             title: "is hidden",
             path: "is_hidden",
-            component: RoomMessageRow
+            component: RoomMessageRow,
           },
           {
             title: "is user muted",
             path: "is_user_muted",
-            component: RoomMessageRow
-          }
+            component: RoomMessageRow,
+          },
         ],
         rows: [],
         filtering: {
           fuse: {
-            keys: ["text", "nickname", "user_id"]
-          }
-        }
-      }
+            keys: ["text", "nickname", "user_id"],
+          },
+        },
+      },
     };
   },
   created() {
@@ -104,13 +104,11 @@ export default {
   },
   methods: {
     formatTimestamp(timestamp) {
-      return moment(timestamp)
-        .tz("Asia/Tokyo")
-        .format("YYYY-MM-DD HH:mm:ss");
+      return moment(timestamp).tz("Asia/Tokyo").format("YYYY-MM-DD HH:mm:ss");
     },
     listenRoomMessages() {
       const self = this;
-      db.ref(`messages/${this.room_id}`).on("child_added", snapshot => {
+      db.ref(`messages/${this.room_id}`).on("child_added", (snapshot) => {
         const message_id = snapshot.key;
         const message = snapshot.val();
         self.private_state.rows.unshift({
@@ -121,7 +119,7 @@ export default {
           user_id: message.user_id,
           reactions: 0,
           is_hidden: false,
-          is_user_muted: false
+          is_user_muted: false,
         });
         logger.info("listenRoomMessages", "child_added");
       });
@@ -129,8 +127,8 @@ export default {
     detachRoomMessages() {
       db.ref(`messages/${this.room_id}`).off();
       logger.info("detachRoomMessages", "detached");
-    }
-  }
+    },
+  },
   // methods: {
   //   toggleHidden: function(index) {
   //     const next_status =

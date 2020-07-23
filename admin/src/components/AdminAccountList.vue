@@ -33,45 +33,45 @@ import AdminAccountRow from "./AdminAccountRow.vue";
 export default {
   name: "AdminAccountList",
   components: {
-    PermissionDenied
+    PermissionDenied,
   },
   props: {
-    can_manage_account_by_login_user: Boolean
+    can_manage_account_by_login_user: Boolean,
   },
-  data: function() {
+  data: function () {
     return {
       columns: [
         { title: "email", path: "id" },
         {
           title: "read",
           path: "can_read",
-          component: AdminAccountRow
+          component: AdminAccountRow,
         },
         {
           title: "write",
           path: "can_write",
-          component: AdminAccountRow
+          component: AdminAccountRow,
         },
         {
           title: "manage account",
           path: "can_manage_account",
-          component: AdminAccountRow
+          component: AdminAccountRow,
         },
         {
           title: "delete",
           path: "delete",
-          component: AdminAccountRow
-        }
+          component: AdminAccountRow,
+        },
       ],
-      rows: []
+      rows: [],
     };
   },
   created() {
     const self = this;
     db.ref("admin_accounts")
       .once("value")
-      .then(snapshot => {
-        snapshot.forEach(child_snapshot => {
+      .then((snapshot) => {
+        snapshot.forEach((child_snapshot) => {
           const email = child_snapshot.key.replace(/%2E/g, ".");
           const authorities = child_snapshot.val();
           self.rows.push({
@@ -79,11 +79,11 @@ export default {
             can_read: authorities.can_read,
             can_write: authorities.can_write,
             can_manage_account: authorities.can_manage_account,
-            delete: true
+            delete: true,
           });
         });
       });
-  }
+  },
 };
 </script>
 

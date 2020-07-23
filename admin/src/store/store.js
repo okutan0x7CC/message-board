@@ -17,8 +17,9 @@ export const store = {
       can_write: false,
       can_manage_account: false,
     },
-    rooms: {},
-    room_messages: {},
+    rtdb: {
+      rooms: {},
+    },
   },
 
   /**
@@ -58,7 +59,7 @@ export const store = {
     db.ref("rooms")
       .once("value")
       .then((snapshot) => {
-        self.state.rooms = Object.assign({}, snapshot.val());
+        self.state.rtdb.rooms = Object.assign({}, snapshot.val());
         logger.succeed("store." + self.fetchRooms.name);
       })
       .catch((reason) => {
@@ -75,9 +76,9 @@ export const store = {
     db.ref(`rooms/${room_id}`)
       .once("value")
       .then((snapshot) => {
-        let new_rooms = this.state.rooms;
+        let new_rooms = this.state.rtdb.rooms;
         new_rooms[room_id] = snapshot.val();
-        self.state.rooms = Object.assign({}, new_rooms);
+        self.state.rtdb.rooms = Object.assign({}, new_rooms);
         logger.succeed("store." + self.fetchRoom.name);
       })
       .catch((reason) => {

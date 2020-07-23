@@ -11,7 +11,7 @@ export default {
   computed: {
     roomId() {
       return this.$route.params.room_id;
-    }
+    },
   },
   data() {
     return {
@@ -19,37 +19,37 @@ export default {
       messages: [],
       hidden_messages: {},
       muted_users: {},
-      reactions: {}
+      reactions: {},
     };
   },
-  created: function() {
+  created: function () {
     store.fetchRoom(this.roomId);
     const self = this;
-    db.ref(`messages/${this.roomId}`).on("child_added", snapshot => {
+    db.ref(`messages/${this.roomId}`).on("child_added", (snapshot) => {
       self.message_ids.unshift(snapshot.key);
       self.messages.unshift(snapshot.val());
     });
-    db.ref(`hidden_messages/${this.roomId}`).on("child_added", snapshot => {
+    db.ref(`hidden_messages/${this.roomId}`).on("child_added", (snapshot) => {
       self.$set(self.hidden_messages, snapshot.key, snapshot.val());
     });
-    db.ref(`hidden_messages/${this.roomId}`).on("child_removed", snapshot => {
+    db.ref(`hidden_messages/${this.roomId}`).on("child_removed", (snapshot) => {
       self.$delete(self.hidden_messages, snapshot.key);
     });
-    db.ref(`muted_users/${this.roomId}`).on("child_added", snapshot => {
+    db.ref(`muted_users/${this.roomId}`).on("child_added", (snapshot) => {
       self.$set(self.muted_users, snapshot.key, snapshot.val());
     });
-    db.ref(`muted_users/${this.roomId}`).on("child_removed", snapshot => {
+    db.ref(`muted_users/${this.roomId}`).on("child_removed", (snapshot) => {
       self.$delete(self.muted_users, snapshot.key);
     });
-    db.ref(`reactions/${this.roomId}`).on("child_added", snapshot => {
+    db.ref(`reactions/${this.roomId}`).on("child_added", (snapshot) => {
       const reaction = snapshot.val();
       self.$set(self.reactions, reaction.message_id, reaction.user_id);
     });
-    db.ref(`reactions/${this.roomId}`).on("child_removed", snapshot => {
+    db.ref(`reactions/${this.roomId}`).on("child_removed", (snapshot) => {
       const reaction = snapshot.val();
       self.$delete(self.reactions, reaction.message_id);
     });
-  }
+  },
 };
 </script>
 

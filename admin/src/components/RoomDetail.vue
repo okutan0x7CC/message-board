@@ -31,21 +31,21 @@ import RoomMessageList from "./RoomMessageList.vue";
 export default {
   name: "Room",
   components: {
-    RoomMessageList
+    RoomMessageList,
   },
   props: {
-    room_id: String
+    room_id: String,
   },
   data() {
     return {
-      shared_state: store.state
+      shared_state: store.state,
     };
   },
   computed: {
     room() {
-      return this.shared_state.rooms[this.room_id] ?? {};
-    }
-  }
+      return this.shared_state.rtdb.rooms[this.room_id] ?? {};
+    },
+  },
 };
 </script>
 

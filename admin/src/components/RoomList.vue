@@ -92,19 +92,19 @@ import PermissionDenied from "./errors/PermissionDenied.vue";
 export default {
   name: "RoomList",
   components: {
-    PermissionDenied
+    PermissionDenied,
   },
   data() {
     return {
       shared_state: store.state,
       private_state: {
         rooms: [],
-        room_ids: []
-      }
+        room_ids: [],
+      },
     };
   },
   watch: {
-    "shared_state.rooms"(new_rooms) {
+    "shared_state.rtdb.rooms"(new_rooms) {
       let rooms_order_by_id_desc = [];
       let room_ids_order_by_id_desc = [];
       for (const [room_id, room] of Object.entries(new_rooms)) {
@@ -114,22 +114,22 @@ export default {
       this.private_state.rooms = rooms_order_by_id_desc;
       this.private_state.room_ids = room_ids_order_by_id_desc;
       logger.info("watch shared_state.rooms");
-    }
+    },
   },
-  created: function() {
+  created: function () {
     store.fetchRooms();
   },
   methods: {
-    deleteRoom: function(index) {
+    deleteRoom: function (index) {
       store.deleteRoom(this.private_state.room_ids[index]);
     },
-    toggleCanRead: function(index) {
+    toggleCanRead: function (index) {
       store.toggleRoomCanRead(this.private_state.room_ids[index]);
     },
-    toggleCanWrite: function(index) {
+    toggleCanWrite: function (index) {
       store.toggleCanWrite(this.private_state.room_ids[index]);
-    }
-  }
+    },
+  },
 };
 </script>
 
