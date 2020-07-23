@@ -56,19 +56,19 @@ const DEFAULT_ADMIN_USER_NICKNAME = "Admin";
 export default {
   name: "RoomMessageCreate",
   props: {
-    room_id: String
+    room_id: String,
   },
   data() {
     return {
       shared_state: store.state,
       text: "",
-      nickname: DEFAULT_ADMIN_USER_NICKNAME
+      nickname: DEFAULT_ADMIN_USER_NICKNAME,
     };
   },
   computed: {
     room() {
-      return this.shared_state.rooms[this.room_id] ?? {};
-    }
+      return this.shared_state.rtdb.rooms[this.room_id] ?? {};
+    },
   },
   methods: {
     create() {
@@ -79,8 +79,8 @@ export default {
         this.nickname
       );
       this.$router.back();
-    }
-  }
+    },
+  },
 };
 </script>
 
