@@ -3,6 +3,7 @@
 import { logger } from "./../logger/logger.js";
 import { database } from "firebase/app";
 import { db } from "./../main.js";
+import moment from "moment-timezone";
 
 export const store = {
   state: {
@@ -24,6 +25,11 @@ export const store = {
         hidden_messages: {},
         muted_users: {},
         reactions: {},
+      },
+    },
+    components: {
+      room_message_list: {
+        rows: [],
       },
     },
   },
@@ -213,6 +219,8 @@ export const store = {
     const self = this;
     db.ref(`messages/${room_id}`).on("child_added", (snapshot) => {
       self.state.rtdb.room.messages[snapshot.key] = snapshot.val();
+      self._appendRoomMessageListRow(snapshot.key, snapshot.val());
+      logger.info("store.listeRoom", "child_added");
     });
     db.ref(`hidden_messages/${room_id}`).on("child_added", (snapshot) => {
       self.state.rtdb.room.hidden_messages[snapshot.key] = snapshot.val();
@@ -232,5 +240,24 @@ export const store = {
     db.ref(`reactions/${room_id}`).on("child_removed", (snapshot) => {
       delete self.state.rtdb.room.reactions[snapshot.key];
     });
+  },
+
+  _appendRoomMessageListRow(message_id, message) {
+    this.state.components.room_message_list.rows.unshift({
+      id: message_id,
+      timestamp: this._formatTimestamp(message.timestamp),
+      text: message.text,
+      nickname: message.nickname,
+      user_id: message.user_id,
+      reactions: 0,
+      is_hidden: false,
+      is_user_muted: false,
+    });
+  },
+
+  _formatTimestamp(timestamp) {
+    return moment(timestamp)
+      .tz("Asia/Tokyo")
+      .format("YYYY-MM-DD HH:mm:ss");
   },
 };

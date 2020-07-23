@@ -19,7 +19,7 @@
         <i-column>
           <i-datatable
             :columns="private_state.columns"
-            :rows="private_state.rows"
+            :rows="shared_state.rows"
             :footer="false"
             :responsive="true"
             :hover="true"
@@ -35,12 +35,9 @@
 </template>
 
 <script>
-import moment from "moment-timezone";
-import { db } from "./../main.js";
 import { store } from "./../store/store.js";
 import PermissionDenied from "./errors/PermissionDenied.vue";
 import RoomMessageRow from "./RoomMessageRow.vue";
-import { logger } from "../logger/logger";
 
 export default {
   name: "RoomMessageList",
@@ -52,7 +49,10 @@ export default {
   },
   data() {
     return {
-      shared_state: store.state,
+      shared_state: {
+        login_user: store.state.login_user,
+        rows: store.state.components.room_message_list.rows,
+      },
       private_state: {
         columns: [
           {
@@ -87,7 +87,6 @@ export default {
             component: RoomMessageRow,
           },
         ],
-        rows: [],
         filtering: {
           fuse: {
             keys: ["text", "nickname", "user_id"],
@@ -95,39 +94,6 @@ export default {
         },
       },
     };
-  },
-  created() {
-    this.listenRoomMessages();
-  },
-  beforeDestroy() {
-    this.detachRoomMessages();
-  },
-  methods: {
-    formatTimestamp(timestamp) {
-      return moment(timestamp).tz("Asia/Tokyo").format("YYYY-MM-DD HH:mm:ss");
-    },
-    listenRoomMessages() {
-      const self = this;
-      db.ref(`messages/${this.room_id}`).on("child_added", (snapshot) => {
-        const message_id = snapshot.key;
-        const message = snapshot.val();
-        self.private_state.rows.unshift({
-          id: message_id,
-          timestamp: self.formatTimestamp(message.timestamp),
-          text: message.text,
-          nickname: message.nickname,
-          user_id: message.user_id,
-          reactions: 0,
-          is_hidden: false,
-          is_user_muted: false,
-        });
-        logger.info("listenRoomMessages", "child_added");
-      });
-    },
-    detachRoomMessages() {
-      db.ref(`messages/${this.room_id}`).off();
-      logger.info("detachRoomMessages", "detached");
-    },
   },
   // methods: {
   //   toggleHidden: function(index) {
