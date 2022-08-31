@@ -12,7 +12,7 @@
     "@inkline/inkline": "^2.2.3",
     "core-js": "^3.6.4",
     "firebase": "^7.16.1",
-    "moment-timezone": "^0.5.31",
+    "moment-timezone": "^0.5.35",
     "vue": "^2.6.11",
     "vue-router": "^3.3.4"
   },
